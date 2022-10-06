@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="ISO-8859-1">
+<!-- <meta http-equiv="refresh" content="30"> comments this line. Its work for auto refresh after 30 second-->
+<title>Insert title here</title>
+
+
+<script th:src="@{/lib/jquery/jquery.min.js}"></script>
+<link rel="stylesheet" th:href="@{/lib/bootstrap/css/bootstrap.min.css}" />
+<script th:src="@{/lib/bootstrap/js/bootstrap.min.js}"></script>
+<script th:src="@{/lib/datetimepicker/jquery.datetimepicker.full.min.js}"></script>
+<link rel="stylesheet" th:href="@{/lib/datetimepicker/jquery.datetimepicker.min.css}" />
+
+
+
+
+ <style>
+ #mytable tbody tr td{
+      width:200px;
+      color:black;
+     
+      
+  }
+  #tabTwo tbody tr td{
+      width:200px;
+      color:black;
+      background:#F0FFFF
+      
+  }
+ th {
+ text-align:center
+ }
+ tr td{
+     text-align:center
+    
+ }
+ .selected{
+ background:red;
+ }
+
+#gtotal{
+  color:red;
+}
+
+#tabTwo tr:nth-child(1){      
+ counter-reset: rowNumber;
+					}
+#tabTwo tr {
+ counter-increment: rowNumber;
+		}
+#tabTwo tr td:first-child::before {
+ content: counter(rowNumber);
+min-width: 1em;
+margin-right: 0.5em;
+} 
+
+
+ </style>
+</head>
+<body>
+      
+
+	<form id="myform" style="margin: 20px; border: 1px solid green;"
+		name="purchase" th:object="${purchaseInfo}"
+		 method="POST">
+		 <p id="msg" style="text-align:center; font-size:18pt; color:red;"></p>
+		<div style="color: red;" th:text="${invoice}"></div>
+		<br>
+		<div>
+		 Comments<input type="textarea" name="textarea" id="comment" style="width:500px; height:50px;"/>
+		</div>
+		<br>
+		<table id="myTable">
+			<tbody>
+			   
+				<tr>
+					<td style="font-size: 18px; font-weight: bold;"> Invoice</td>
+
+					<td><input type="text" name="invoiceNo" id="invoiceNo" style="font-weight: bold;" readonly></td>
+				</tr>
+
+				<tr>
+					<td><select  name="brand" id="brand" class="form-control" required="required"></select></td>
+					<td><select name=productId id="product" class="form-control" required="required"></select></td>
+					<td><select id="catagoryName"  name="catagoryName" class="form-control" style="width:190px;"
+						></select></td>
+					<td><input type="text" name="productQuanity" id="qty"
+						placeholder=" Quanity" style="width:100px;" /></td>
+					<td><input type="text" id="purchasePrice" name="purchasePrice" required
+						placeholder=" purchasePrice" style="width:100px;"/></td>
+					<td><input type="text" name="sellingPrice"  id="sellingPrice"
+						placeholder=" sellingPrice" style="width:100px;" /></td>
+						
+						<td><input type="text" name="expiredDate"  id="expiredDate" autocomplete="off"
+						style="width:100px;"  placeholder="Expired Date"/></td>
+						
+					<td><select name="unitOfQuanity" id="unitOfQuanity"
+						class="form-control">
+							<option value="">Select One</option>
+							<option value="Pcs">Pcs</option>
+							<option value="Sq">Sq</option>
+					</select></td>
+					
+					<td><input type="submit" value="Add More" id="add"
+						class="btn btn-primary"
+						style="background-color: green; color: white;" /></td>
+				</tr>
+			</tbody>
+		</table>
+		<h3 style="text-align:center;">Purchase </h3>
+		<table id="tabTwo"  border="1" style="border-collapse: collapse; border:1px solid black;">
+            <thead></thead>
+			<tbody>
+    
+
+			</tbody>
+			<tfoot></tfoot>
+			
+			
+		</table>
+		
+       <br><br>
+
+		<input type="button" class="btn btn-primary  " value="Purchase" id="purchases" style="margin-left:200px;"/> <br>
+	</form>
+
+	<script type="text/javascript">
+	
+		$(document).ready(
+				
+				function() {
+					
+					const arr = [];
+					
+					$("#add").on(
+							"click",
+							function(e) {
+								e.preventDefault();
+								   //$("td:eq(3)").css("color","red");
+								 
+								   var isProductDuplicate=false;
+								   const catagoryProductDetails = $(this).closest("tr").find(
+				                   "td").eq(2).find(
+				                   "select option:selected").text();
+			                       console.log("catagoryName",catagoryProductDetails);
+								   $("#tabTwo tbody tr").each(function(){
+									   
+									   var existingProductInTable=$(this).closest('tr').find('td:eq(3)').text();
+									   
+									   if(existingProductInTable==catagoryProductDetails){
+											 isProductDuplicate=true;
+											 return;
+										 }else{
+											 isProductDuplicate=false;
+										 } 
+									   
+								   });
+								    if(isProductDuplicate){
+									alert("Product Already Exist");
+									return false;
+								} 
+								
+								  
+								 
+								   
+								const brand = $(this).closest("tr").find(
+										"td").eq(0).find(
+										"select option:selected").text();
+								
+								  const brandCode = $(this).closest("tr").find(
+								"td").eq(0).find(
+								"select option:selected").val();  
+								
+								const productName = $(this).closest("tr").find(
+										"td").eq(1).find(
+										"select option:selected").text();
+								
+								const productCode = $(this).closest("tr").find(
+								"td").eq(1).find(
+								"select option:selected").val();
+								
+								const catagoryProductId = $(this).closest("tr").find(
+								"td").eq(2).find(
+								"select option:selected").val();
+								
+								const catagoryName = $(this).closest("tr").find(
+								"td").eq(2).find(
+								"select option:selected").text();
+								
+								var qty=$("#qty").val();
+								var purchasePrice=$("#purchasePrice").val();
+								var sellingPrice=$("#sellingPrice").val();
+								var unitOfQuanity=$("#unitOfQuanity").val();
+								
+								 if(brandCode==""){
+									  $("#msg").text("Please Select  Brand !");
+									   return false;
+								   }else if(productCode==""){
+									   $("#msg").text("Please Select  Product !");
+									   return false;
+								   }else if(catagoryProductId==""){
+									   $("#msg").text("Please Select  Product Category !");
+									   return false;
+								   }else if(qty==""){
+									   $("#msg").text("Please Input Quantity !");
+									   return false;
+								   }else if(purchasePrice==""){
+									   $("#msg").text("Please Input Purchase Price !");
+									   return false;
+								   }else if(sellingPrice==""){
+									   $("#msg").text("Please Input Selling Price !");
+									   return false;
+								   }else if(unitOfQuanity==""){
+									   $("#msg").text("Please Select Unit of Quantity  !");
+									   return false;
+								   }
+								
+							
+								//console.log("price "+productPrice);
+ 
+								const $inputs = $('#myform :input,select');
+								const values = {};
+								let sl=0;
+								$inputs.each(function() {
+									
+									values[this.name] = $(this).val();
+									values["brand"] = brand
+									values["brandCode"] = brandCode
+									values["productName"] = productName
+									values["catagoryProductId"] = catagoryProductId
+									values["catagoryName"] = catagoryName
+									values["sl"] = sl;
+									sl++;
+								});
+								
+								arr.push(values);
+								$("#msg").text("");
+								console.log(arr);
+								
+								//Here Sum of purchases price
+								 let totalPurchase=0;
+								$.each(arr,function(i){
+									//console.log(typeof flot) ;
+									totalPurchase+=parseFloat(arr[i].purchasePrice);
+								});
+									
+								
+								//Here Sum of Quantity price
+								let totalQuantity=0;
+								$.each(arr,function(i){
+									totalQuantity+=parseFloat(arr[i].productQuanity);
+								});
+									
+
+								//Here Sum of selling price
+								  let totalSell=0;
+								$.each(arr,function(i){
+									//console.log(typeof flot) ;
+									totalSell+=parseFloat(arr[i].sellingPrice);
+								}); 
+								
+								//Here Sum of selling price
+								  let tv=0;
+								     
+								var purchasesPrice=0; //Here multiplication purchaes price and quantity and push value in array
+								var Quantity=0;
+								const quantityPurchasesArray=[];
+								$.each(arr,function(i){
+									//console.log(typeof flot) ;
+									 purchasesPrice=arr[i].purchasePrice;
+									 Quantity=arr[i].productQuanity;
+									tv=parseFloat(purchasesPrice*Quantity);
+									quantityPurchasesArray.push(tv);
+									
+									
+									
+								}); 
+								
+								var quantityPurchasesTotal=0; //here array value calculate as grand total column;
+								$.each(quantityPurchasesArray,function(i){
+									quantityPurchasesTotal+=quantityPurchasesArray[i];
+								});
+							   
+								
+								//console.log("total: " + t);
+								const tableheadAppend = $("#tabTwo thead");
+								tableheadAppend.empty();
+									const tabl_tr="<tr>"+"<th>"+"SL"+"</th>"+"<th>"+"Brand"+"</th>"+"<th>"+"Product Name"+"</th>"+"<th>"+"Prodcut Catagory"+"</th>"+"<th>"+"Quantity"+"</th>"+"<th>"+"Purchase Price"+"</th>"+"<th>"+"Sub-Total"+"</th>"+"<th>"+"Selling Price"+"</th>"+"<th>"+"Expired Date"+"<th>"+"Unit of Quantity"+"</th>"+"<th>"+"Action"+"</th>"+"</tr>";
+									tableheadAppend.append(tabl_tr);
+									
+									const tableTfootAppend = $("#tabTwo tfoot");
+									tableTfootAppend.empty();
+									const tf="<tr>"+"<th colspan='4' style='text-align:right;'>"+"Total"+"</th>"+"<th id='quantity'>" +totalQuantity+"</th>"+"<th id='totalPurchase' >"+totalPurchase.toFixed(2) +"</th>"+"<th id='gtotal'>"+quantityPurchasesTotal+"</th>"+"<th id='sel' colspan='1'>"+totalSell+"</th>"+"</tr>";
+									tableTfootAppend.append(tf);
+									
+									var inp='<input type="button" value="XXXX" id="remove" class="btn btn-danger"/>'
+								const tableBody = $("#tabTwo tbody");
+								tableBody.empty();
+						        
+								var isProductDuplicate=false;
+								$.each(arr, function(i, v) {
+									
+									const markup = "<tr>" 
+									+ "<td id='serial'>"
+									  + "</td>"
+									      + "<td>"
+											+ arr[i].brand + "</td>"
+											+ "<td>" + arr[i].productName
+											+ "</td>" + "<td>" + arr[i].catagoryName
+											+ "</td>" + "<td>" + arr[i].productQuanity
+											+ "</td>" + "<td class='price'>" + arr[i].purchasePrice
+											+ "</td>" + "<td class='tpq'>" +quantityPurchasesArray[i]
+											+ "</td>" + "<td>" + arr[i].sellingPrice
+											+ "</td>" + "<td>" + arr[i].expiredDate
+											+ "</td>" + "<td>" + arr[i].unitOfQuanity
+											+ "</td>" +"<td>"+inp+"</td>"
+													
+											+ "</tr>";
+											
+									const tableBody = $("#tabTwo tbody");
+									tableBody.append(markup);
+									
+									//selectRow(); //When select row background color change selected row.
+									
+									
+								});
+								
+								
+								
+								/*  var table = document.getElementById("tabTwo"); //table rows column value calculate 
+								    var sumVal = 0;
+							        
+							        for(var i = 1; i <= table.rows.length; i++)
+							        {
+							            sumVal+=parseInt(table.rows[i].cells[5].innerHTML);
+							        }
+							        
+							        document.getElementById("totalPurchase").innerHTML =  sumVal;
+							        console.log(sumVal); */
+							        
+								
+							});
+					 getInvoicNo();
+    
+					getAllBrand(); //show all brand
+					
+
+					$('#brand').change(function() {
+						$('#product option').remove();
+						getAllProduct($(this).val()); //show all product
+					});
+					
+					$('#product').change(function() {
+						$('#catagoryName option').remove();
+						geProductCatagory($('#brand').val(),$('#product').val(), $(this).val()); //show all union
+						});
+					
+					$("#purchases").on("click",function(){ 
+						  saveAllPurchases(arr);
+						  
+						  window.setTimeout( function() {  //this method work auto refresh after purchase save.
+							  window.location.reload();
+							},1000);
+						  
+					  });
+					
+					 
+					$("#tabTwo").on("click","#remove",function(e){
+						    $(this).closest("tr").remove();
+						 const serial=   $(this).closest("tr").find("td").eq(0).text();
+						    
+						    const removeIndex = arr.findIndex( item => item.indexNumber === serial);
+						
+						    arr.splice( removeIndex, 1 );
+						    
+						    //start recalculate array after remove row
+						    
+						    let totalQuantity=0;// here total quantity decreasing when remove row.
+							$.each(arr,function(i){
+								totalQuantity+=parseFloat(arr[i].productQuanity);
+							});
+							//console.log(totalQuantity);
+							document.getElementById("quantity").innerHTML=totalQuantity;
+							
+							//Here Sum of selling price
+							  let totalSell=0;  //here total sell decreasing when remove row.
+							$.each(arr,function(i){
+								//console.log(typeof flot) ;
+								totalSell+=parseFloat(arr[i].sellingPrice);
+							}); 
+							document.getElementById("sel").innerHTML=totalSell;
+							
+							//Here Sum of selling price
+							  let tv=0;
+							     
+							var purchasesPrice=0; //here purchase price and quantity are decreasing  when remove row.
+							var Quantity=0;
+							const quantityPurchasesArray=[];
+							$.each(arr,function(i){
+								//console.log(typeof flot) ;
+								 purchasesPrice=arr[i].purchasePrice;
+								 Quantity=arr[i].productQuanity;
+								tv=parseFloat(purchasesPrice*Quantity);
+								quantityPurchasesArray.push(tv);
+								
+								
+								
+							}); 
+							
+							var quantityPurchasesTotal=0; //here array value calculate as grand total column;
+							$.each(quantityPurchasesArray,function(i){ //here quantity and purchase total value decreasing when remove row.
+								quantityPurchasesTotal+=quantityPurchasesArray[i];
+							});
+							document.getElementById("gtotal").innerHTML=quantityPurchasesTotal;
+							
+							
+							 let totalPurchase=0;
+								$.each(arr,function(i){  //total purchase value decreasing when remove row
+									//console.log(typeof flot) ;
+									totalPurchase+=parseFloat(arr[i].purchasePrice);
+								});
+								document.getElementById("totalPurchase").innerHTML=totalPurchase;
+								
+								
+							
+					  });
+					
+					
+				});
+		
+		
+		   
+
+		function getAllBrand() {
+			// const contextpath = /*[[@{/product/product_list}]]*/ '';
+
+			$.ajax({
+				url : '/b/brand_list',
+				type : 'get',
+				success : function(response) {
+					//console.log(response);
+					$('#brand').append($('<option>', {
+						value : '',
+						text : 'Select Brand'
+					}));
+					$.each(response, function(i) {
+						$('#brand').append($('<option>', {
+							value : response[i].brandCode,
+							text : response[i].brandName
+						}));
+					});
+				},
+				error : function() {
+					alert("No data found!");
+				}
+			});
+		}
+
+		function getAllProduct(BRAND_CODE) {
+			$.ajax({
+				url : '/product/product_list',
+				type : 'get',
+				data : {
+					"BRAND_CODE" : BRAND_CODE
+				},
+				success : function(response) {
+					//console.log(response);
+					$('#product').append($('<option>', {
+						value : '',
+						text : 'Select Product'
+					}));
+					$.each(response, function(i) {
+						$('#product').append($('<option>', {
+							value : response[i].pId.productId,
+							text : response[i].productName
+						}));
+					});
+				},
+				error : function() {
+					alert("No data found!");
+				}
+			});
+		}
+		
+		//Save here all purchases product by ajax
+		function saveAllPurchases(purhases) {
+			var invoice=$("#invoiceNo").val(); //this invoice no save in comments table as path variable.
+			var comment=$("#comment").val();
+			url='';
+			if(comment){
+				url=`/p/save_purchase/${invoice}/${comment}`
+			}else{
+				url=`/p/save_purchase/${invoice}/${null}`
+			}
+			$.ajax({
+				url : url,
+				type : 'post',
+				data: JSON.stringify(purhases),
+			    contentType: "application/json",
+				success : function(response) {
+					alert("Products Insert Successfully ");
+					
+					
+				},
+				error : function() {
+					alert("an Error Occured");
+				}
+			});
+		}
+		
+		
+		
+		function geProductCatagory(brandCode, productId) {
+			/* let url = window.location.origin + '/'
+					+ window.location.pathname.split('/')[1]
+					+ '/catagory_list'; */
+			$.ajax({
+				url : '/catagory_list',
+				type : 'Get',
+				data : {
+
+					"brandCode" : brandCode,
+					"productId" : productId,
+
+				},
+
+				success : function(response) {
+					$('#catagoryName').append($('<option>', {
+						value : '',
+						text : 'Select Category'
+					}));
+					$.each(response, function(i, e) {
+						//console.log(e.unionid);
+						$('#catagoryName').append($('<option>', {
+							value : e.catagoryIdInfo.catagoryProductId,
+							text : e.catagoryName
+						}));
+					});
+				},
+				error : function() {
+					alert("No data found int Product Catagory!");
+				}
+			});
+		}
+		
+		 function selectRow(){
+			var index;
+			var table=document.getElementById("tabTwo");
+			
+			for(var i =1; i<table.rows.length; i++){
+				table.rows[i].onclick = function(){
+				 if(typeof index !== 'undefined'){
+					 table.rows[index].classList.toggle("selected");
+					 
+				 }
+				
+					index=this.rowIndex;
+					this.classList.toggle("selected");
+					console.log(index);
+				};
+			}
+			
+		}
+		 function getInvoicNo() {
+				$.ajax({
+					url : '/p/getInv',
+					type : 'get',
+					success : function(response) {
+						console.log("Invoice No "+response);
+						
+							document.getElementById("invoiceNo").defaultValue = response;
+						
+					},
+					error : function(err) {
+						alert("error Invoice");
+					}
+				});
+			}
+		 
+		 
+		 $.datetimepicker.setLocale('de');
+		   $('#expiredDate').datetimepicker({
+		    i18n:{
+		     de:{
+		      months:[
+		       'January','February','March','April',
+		       'May','Jun','July','August',
+		       'September','October','November','December',
+		      ],
+		      dayOfWeek:[
+		       "So.", "Mo", "Di", "Mi",
+		       "Do", "Fr", "Sa.",
+		      ]
+		     }
+		    },
+		    timepicker:false,
+		    format:'Y-m-d',
+		    minDate: 0
+		   });
+		  
+         
+	</script>
+
+</body>
+</html>

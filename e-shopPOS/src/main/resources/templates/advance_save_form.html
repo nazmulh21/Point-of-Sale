@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
+<head>
+<meta charset="ISO-8859-1">
+<title>Insert title here</title>
+
+<link rel="stylesheet" th:href="@{/lib/bootstrap/css/bootstrap.min.css}" />
+<script th:src="@{/lib/bootstrap/js/bootstrap.min.js}"></script>
+<script th:src="@{/lib/jquery/jquery.min.js}"></script>
+
+
+<style>
+ #myform{
+    margin-left:400px;
+ }
+ #myform input{
+   width:500px;
+ }
+</style>
+</head>
+<body>
+   <h1 style="text-align:center;">Advance Form</h1>
+   <hr>
+   <form id="myform">
+     <input class="form-control form-control-sm"  type="text" name="customerMobile" id="customerMobile" required="required" placeholder="Mobile"><br>
+    <input class="form-control" type="text" name="customerName" required="required" placeholder="Customer Name"><br>
+    <input class="form-control form-control-sm" type="text" name="advance" id="advance" placeholder="Advance"><br>
+    <input class="form-control form-control-sm" type="text" name="customerEmail" placeholder="Email"><br>
+    <input class="form-control form-control-sm" type="text" name="address" placeholder="Address">
+   
+   <br><br>
+   <input class="btn btn-primary" type="button" id="advanceSaved" value="Save"/>
+   </form>
+   
+   <script>
+   $(document).ready(function(){
+	   $("#advanceSaved").click(function(){
+		   var mobile=$("#customerMobile").val();
+		   var advance=$("#advance").val();
+		   if(mobile==""){
+			   alert("Input Mobile Field");
+			   return false;
+		   }else if(advance==""){
+			   alert("Input Advance Field");
+			   return false;
+		   }
+		   const $inputs = $('#myform :input');
+		   var values={};
+		   $inputs.each(function(){
+			   values[this.name] = $(this).val();
+			   
+		   });
+		   saveAdvance(values);
+	   });
+	   
+	   
+   });
+   
+  function saveAdvance(values){
+	  $.ajax({
+		   url:'/advance/advance_save',
+		   type:'post',
+		   contentType: "application/json; charset=utf-8",
+		   data: JSON.stringify(values),
+		   cache: false,
+		   success :function(){
+			   alert("Advance Save Successfully");
+		   }
+	   });
+	  
+  }
+  
+   
+   </script>
+</body>
+</html>

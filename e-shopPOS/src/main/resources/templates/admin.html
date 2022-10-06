@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml"
+xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="ISO-8859-1">
+<title>Insert title here</title>
+ <link rel="stylesheet" href="/lib/css/fontawesome.min.css">
+ <link rel="stylesheet" href="/lib/webfonts">
+ <link rel="stylesheet" href="/lib/css/all.min.css">
+ 
+ <style>
+ *{
+  margin:0;
+  padding:0;
+  text-decoration:none;
+  box-sizing:border-box;
+ }
+ .data{
+   background:url(/img/image_bg.webp);
+   height:100vh;
+   margin-left:250px;
+   background-size:cover;
+   background-repeat:no-repeat;
+ 
+ } 
+ nav{
+   background:#1D2951; 
+   line-height:80px;
+   position:fixed;
+   width:100%;
+ }
+ 
+ label{
+  line-height:80px;
+  font-size:30px;
+  color:white;
+  font-weight:200;
+  margin-left:50px;
+  cursor:pointer;
+ }
+ nav ul{
+    float:right;
+    margin-right:20px;
+ 
+ }
+ nave ul li{
+    line-height:80px;
+    margin:0 10px;
+ 
+ }
+ nav ul li a{
+     color:white;
+     font-size:20px;
+     padding:6px 15px;
+     font-weight:600px;
+     background-color:rgb(55,34,246);
+     border-radius:3px;
+ 
+ }
+ nav ul li a:hover{
+      background-color:rgb(49,27,214);
+      color:white;
+      transition:0.5s;
+ }
+ .side-menu{
+   position:fixed;
+   background:#1D2951;
+   width:250px;
+   height:100%;
+   margin-top:80px;
+ 
+ }
+ .side-menu center img{
+        height:120px;
+        width:120px;
+        border-radius:50%;
+        margin-top:30px;
+        border:30px solid white; /*picture show not buty. you can remove this*/
+ }
+ .side-menu center h2{
+      color:white;
+  
+ }
+ .side-menu a{
+    display:block;
+    line-height:60px;
+    transition:0.5s;
+    color:white;
+    
+ }
+ .side-menu a:hover{
+   background:rgb(20,54,165);
+   padding-left:20px;
+   
+ 
+ }
+ .side-menu spam{
+    font-size:20px;
+    margin-left:10px;
+    
+ }
+ .side-menu i{
+    font-size:20px;
+    margin-left:20px;
+    color:white;
+ }
+ 
+ 
+ nav .menu-bar{
+ 
+    float:right;
+    margin-top:5px;
+    display:none;
+    margin-right:20px;
+ }
+ 
+ #menu{
+  display:none;
+  
+   
+ }
+ .side-menu .logout{
+     display:none;
+ }
+ @media(max-width:850px){
+     .side-menu a span{
+       display:none;
+     }
+     .side-menu center{
+      display:none;
+     }
+     .side-menu{
+      width:100px;
+     }
+     .side-menu a i{
+       display:block;
+       line-height:80px;
+       text-align:center;
+       margin-left:0px;
+       font-size:35px;
+     
+     }
+     .data{
+        margin-left:100px;
+     
+     }
+ 
+ }
+ @media(max-width:650px){
+   
+   .data{
+     display:none;
+   }
+   nav ul{
+     display:none;
+   
+   }
+   .side-menu{
+     width:100%;
+     text-align:center;
+     background-color:#4C516d;
+     transition:all 0.5s;
+   }
+   .side-menu a i{
+      display:none;
+   }
+   .side-menu a span{
+     display:block;
+   }
+   .side-menu .logout{
+     display:block;
+   }
+   nav .menu-bar{
+     display:block;
+   }
+ 
+ }
+ #menu:checked ~ .side-menu{
+ 
+   left:0;
+ }
+ 
+ #pos:hover{
+     color:red;
+     font-size:20pt;
+ }
+ 
+ #addmin:hover{
+     color:red;
+ }
+ 
+ </style>
+</head>
+<body>
+<input type="checkbox" id="menu">
+<nav>
+<label id="addmin">My admin Page</label>
+
+<ul>
+ <li>
+     <div th:if="${session.message}">
+          <div >
+           <a href="/login"><input type="text" name="user" th:value="${session.message}" readonly="readonly" class="bg-gray" required="required"></a>
+          </div>
+          
+      </div>
+    </li>
+  
+   <!--  <li><a href="/login">Logout</a></li>-->
+   
+  
+</ul>
+<label for="menu" class="menu-bar">
+<i class="fa fa-bars"></i>
+
+
+</label>
+
+</nav>
+<div class="side-menu">
+  <center>
+    <img src="/img/shop-1.jpg"></img>
+    <br><br>
+    <h2 id="pos">Point Of Sale</h2>
+  </center>
+  <br><br>
+  <a href="/p/purchase"><i class="fa fa-shopping-cart" aria-hidden="true"></i>Purchase</a>
+  <a href="/b/brand"><i class="fas fa-shopping-bag"></i><span>Add Brand</span></a>
+  <a href="/stocks/currentStockShow"><i class="fas fa-shopping-bag"></i><span>Current Stocks</span></a>
+  <a href="/p/plist"><i class="fa fa-user"></i><span>Permit to Stock</span></a>
+  <a href="/sale/sale_form_show" ><i class="fa fa-shopping-cart" aria-hidden="true"></i><span>Sales</span></a>
+  <a href="/changePassword"><i class="fa fa-key"></i><span>Change Password</span></a>
+   
+  
+  <a><i class="fa fa-shopping-basket"></i><span>Product</span></a>
+  <a><i class="fa fa-ban"></i><span>Ban Customers</span></a>
+  <a><i class="fa fa-cog"></i><span>Setting</span></a>
+  <a class="logout"><span>Logout</span></a>
+</div>
+<div class="data">
+ 
+
+</div>
+</body>
+</html>

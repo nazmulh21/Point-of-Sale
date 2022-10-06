@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
+<head>
+<meta charset="ISO-8859-1">
+<meta http-equiv="refresh" content="30">
+<title>Insert title here</title>
+
+<script th:src="@{/lib/jquery/jquery.min.js}"></script>
+<link rel="stylesheet" th:href="@{/lib/bootstrap/css/bootstrap.min.css}" />
+<script th:src="@{/lib/bootstrap/js/bootstrap.min.js}"></script>
+
+
+<style>
+ #mytable tr:nth-child(2){      /* this style used for auto increment Serial No in Data Table*/
+ counter-reset: rowNumber;
+					}
+#mytable tr {
+ counter-increment: rowNumber;
+		}
+#mytable tr td:first-child::before {
+ content: counter(rowNumber);
+min-width: 1em;
+margin-right: 0.5em;
+					}
+					
+#mytable{
+ text-align:center;
+					}
+					
+.selected{
+ background:#DEB887;
+ }
+
+					
+		
+
+</style>
+</head>
+<body>
+
+<h1 style="text-align:center;">Permit and Add to Stock</h1>
+
+<table border="1" style="margin-left:100px; overflow-x:auto;" id="mytable">
+<tr>
+<th>SL</th>
+<th>Invoice No</th>
+<th>Brand Name</th>
+<th>Product Name</th>
+<th>Product Description</th>
+<th>Product Quantity</th>
+<th>Purchase Price</th>
+<th>Selling Price</th>
+<th>Price Key</th>
+<th>Unit Of Quantity</th>
+<th>Action</th>
+</tr>
+
+<th:block th:each="c,i : ${Purchaselist}" id="c">
+
+           <tr style="text-align:centere;" id="trr" >
+           
+             <td id="sl"></td>
+			 <td class="invoice" th:text="${c.invoiceNo}"></td> 
+			 <td th:text="${c.brandInfo.brandName}"></td> 
+			  <td th:text="${c.productInfo.productName}"></td> 
+			 <td th:text="${c.catagoryInfo.catagoryName}"></td> 
+			  <td th:text="${c.productQuanity}"></td> 
+			  <td th:text="${c.purchasePrice}"></td> 
+			  <td th:text="${c.sellingPrice}"></td>
+			  <td th:text="${c.priceKey}"></td>
+			  <td th:text="${c.unitOfQuanity}"></td>
+			  <td>
+			  
+			      <a th:href="@{/p/permit/{invoiceNo}(invoiceNo=${c.invoiceNo})}" class="btn btn-primary" id="process">Process</a>
+			    
+                </td>
+			  
+			  
+			</tr>  
+			  
+		</th:block> 
+		
+			 
+	</table>
+	<br><br>	
+	<p th:text="${msgg}" style="text-align:center; font-size:24px; font-weight:bold; color:red;"/>	
+			<script>
+			$(document).ready(function(){
+				
+				
+			});
+			function selectRow(){  //When selected row background color change will be selected .
+     			var index;
+     			var table=document.getElementById("mytable");
+     			
+     			for(var i =1; i<table.rows.length; i++){
+     				table.rows[i].onclick = function(){
+     				 if(typeof index !== 'undefined'){
+     					 table.rows[index].classList.toggle("selected");
+     					 
+     				 }
+     				
+     					index=this.rowIndex;
+     					this.classList.toggle("selected");
+     					console.log(index);
+     				};
+     			}
+     			
+     		}
+             selectRow();
+			
+			 
+			
+			
+			</script>
+			
+
+			
+			
+
+</body>
+</html>

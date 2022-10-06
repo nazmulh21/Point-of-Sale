@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org">
+	
+<head>
+    <link rel="stylesheet" th:href="@{/lib/bootstrap/css/bootstrap.min.css}" />
+    <script th:src="@{/lib/bootstrap/js/bootstrap.min.js}"></script>
+    
+<meta charset="ISO-8859-1">
+<title>Insert title here</title>
+<style>
+
+ #dataTable tr:nth-child(1){      
+ counter-reset: rowNumber;
+					}
+#data tr {
+ counter-increment: rowNumber;
+		}
+#data tr td:first-child::before {
+ content: counter(rowNumber);
+min-width: 1em;
+margin-right: 0.5em;
+					} 
+</style>
+</head>
+<body>
+<h1 style="text-align:center;">Date Wise Sale Data</h1>
+
+     <table style="margin-left:300px;">
+     <tr>
+      <td>Product Name</td><td><select id="productName"></select></td>
+     </tr>
+  
+      <tr>
+         <td>From Date</td>
+         <td><input type="text" name="insDate" id="stratDat"/></td>
+       
+         <td>To Date</td>
+        <td><input type="text" name="insDate2" id="endDate"/></td>
+        <td><input type="submit" id="btnSubmit" value="Search"/></td>
+      </tr>
+     
+     </table>
+     <hr>
+   
+   <table id="data" border="1" style="text-align:center; margin-left:100px; ">
+     <thead>
+     </thead>
+     <tbody>
+     </tbody>
+     <tfoot></tfoot>
+    
+   </table>
+   <br><br>
+  
+    <script th:src="@{/lib/jquery/jquery.min.js}"></script>
+    <script th:src="@{/lib/datetimepicker/jquery.datetimepicker.full.min.js}"></script>
+     <link rel="stylesheet" th:href="@{/lib/datetimepicker/jquery.datetimepicker.min.css}" />
+     
+     
+   <script>
+   $(document).ready(function(){
+	   $("#btnSubmit").on("click",function(){
+		   var startDate=$("#stratDat").val();
+		   var endtDate=$("#endDate").val();
+		  var categoryProductDetails=$("#productName option:selected").val();
+		   
+		   if(startDate==0 && endtDate==0){
+			   alert("Select Date");
+			   return false;
+		   }
+		   let url= '';
+		   if(categoryProductDetails){
+			   url=`/sale/get_all_sale_date_wise/${categoryProductDetails}/${startDate}/${endtDate}`
+		   }else{
+			   
+			   url=`/sale/get_all_sale_date_wise/${null}/${startDate}/${endtDate}`
+		   }
+		   $.ajax({
+			   url:url,
+			   type:'GET',
+			  success: function(res){
+				  dateWiseData(res);
+				  
+			  }
+		   });//
+		   
+      	
+	   }); //
+	   
+	   $.datetimepicker.setLocale('de');
+	   $('#stratDat').datetimepicker({
+	    i18n:{
+	     de:{
+	      months:[
+	       'Januar','February','March','April',
+	       'May','Jun','July','August',
+	       'September','October','November','December',
+	      ],
+	      dayOfWeek:[
+	       "So.", "Mo", "Di", "Mi",
+	       "Do", "Fr", "Sa.",
+	      ]
+	     }
+	    },
+	    timepicker:false,
+	    format:'d-m-Y'
+	   });
+	   
+	   $.datetimepicker.setLocale('de');
+	   $('#endDate').datetimepicker({
+	    i18n:{
+	     de:{
+	    	 months:[
+	  	       'January','February','March','April',
+	  	       'May','Jun','July','August',
+	  	       'September','October','November','December',
+	  	      ],
+	      dayOfWeek:[
+	       "So.", "Mo", "Di", "Mi",
+	       "Do", "Fr", "Sa.",
+	      ]
+	     }
+	    },
+	    timepicker:false,
+	    format:'d-m-Y'
+	   });
+	   
+	   getAllProductName();
+	  
+		   
+   });
+   
+   function dateWiseData(res){
+	   var tableThead=$('#data thead');
+	      tableThead.empty();
+	     const th="<tr>"+"<th>"+"SL"+"</th>"+"<th>"+"Item Description"+"</th>"+"<th>"+"Purchase Price"+"</th>"+"<th>"+"Quantity"+"</th>"+"<th>"+"Subtotal"+"</th>"+"<th>"+"Unit Price"+"</th>"+"<th>"+"Subtotal"+"</th>"+"<th>"+"Profit"+"</th>"+"<th>"+"Unit of Quantity"+"</th>"+"<th>"+"Customer Name"+"</th>"+"<th>"+"Date"+"</th>"+"</tr>";
+	     tableThead.append(th);
+	     var tfoot=$("#data tfoot");
+       const tfooter="<tr>"+"<th id='' colspan='2' style='margin:right;'>"+"</th>"+"<th id='purchase'>"+"</th>"+"<th id='qty'>"+"</th>"+"<th id='subtotal'>"+"</th>"+"<th id='unitPrice'>"+"</th>"+"<th id='subtotalUnitPrice'>"+"</th>"+"<th id='profit' >"+"</th>"+"<th colspan='3'>"+"</th>"+"</tr>";
+       tfoot.append(tfooter);
+	     var totalProfit=0;
+	     var totalUnit=0;
+	     var totalQty=0;
+	     var totalInvest=0;
+	    var  totalLoss=0;
+	   
+	  $.each(res, function (key, value) 
+			  {
+		      var tableBody=$('#data tbody');
+		      tableBody.append('<tr><td>'+ '</td> <td>' + value.catagoryName + '</td> <td class="purchasePrice">' + value.purchasePrice + '</td><td class="qty">' + value.qty + '</td><td class="subtotal">' + '</td> <td class="unitPrice">' + value.unitPrice + '</td><td class="subtotalUnitprice">' + '</td><td class="profit">' + value.profit + '</td> <td class="unitPrice">' + value.unitOfQuantity + '</td><td>' + value.customerInfo.customerName + '</td><td>' + value.saleDate + '</td></tr>');
+		     
+		      var profit=Number(value.profit);
+		      if(profit>0){
+		      totalProfit+=profit;
+		      } else if(profit<0){
+		    	  totalLoss+=profit;
+		              } 
+		      var unitPrice=Number(value.unitPrice);
+		      var qty=Number(value.qty);
+		      var actualUnitPrice=Number(unitPrice)*Number(qty);
+		      console.log("actualUnitPrice",actualUnitPrice);
+		      if(actualUnitPrice>0){
+		    	  totalUnit+=actualUnitPrice;
+		      }
+		     
+		      totalQty+=qty;
+		      
+		      var purchase=Number(value.purchasePrice);
+		      var actualPurchase=Number(qty)*Number(purchase);
+		      totalInvest+=actualPurchase;
+		      
+		     
+		      });
+	  var actualProfit=totalProfit+totalLoss;
+	  $('#profit').html("Profit: "+actualProfit);
+	  $('#subtotalUnitPrice').html("Total Sale: "+totalUnit);
+	  $('#qty').html("Qty: "+totalQty);
+	  $('#subtotal').html("Invest: "+totalInvest);
+	  console.log("actualProfit:",actualProfit);
+	  calculateValue();
+	  
+   }
+   
+   function calculateValue(){
+	   $("#data tbody tr").each(function(){
+		   var qty=Number($(this).closest('tr').find('.qty').text());
+		   var purchasePrice=Number($(this).closest('tr').find('.purchasePrice').text());
+		   var unitPrice=Number($(this).closest('tr').find('td:eq(5)').text());
+		   var subtotal=parseInt(qty)*parseInt(purchasePrice);
+//......................purchase subtotal here..............//
+		 $(this).find('.subtotal').text(subtotal);
+//.........................unit subtotal here..................//		 
+		 var sutotalUnitPrice=qty*unitPrice;
+		 $(this).find('.subtotalUnitprice').text(sutotalUnitPrice);
+		   
+	   });
+	   
+	   
+	   $("#data tbody tr").each(function(){
+		   var qty=Number($(this).closest('tr').find('.qty').text());
+		   var unitPrice=Number($(this).closest('tr').find('.unitPrice').text());
+		  // console.log("unitPrice",unitPrice);
+		   var subtotal=qty*unitPrice;
+		   //console.log("subtotal",subtotal);
+		  // $(".unitSub").text(subtotal);
+	   });
+	  
+   }
+  function getAllProductName(){
+	  $.ajax({
+			url : `/category/get_all_product_name`,
+			type : 'get',
+			success : function(response) {
+				$('#productName').append($('<option>', {
+					value : '',
+					text : 'Select One'
+				}));
+				$.each(response, function(i) {
+					$('#productName').append($('<option>', {
+						value : response[i].catagoryProductId,
+						text : response[i].catagoryName
+					}));
+				});
+			},
+			error : function() {
+				alert("No data found!");
+			}
+		});
+  }
+   </script>
+</body>
+</html>

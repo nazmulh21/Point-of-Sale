@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="ISO-8859-1">
+<title>Insert title here</title>
+
+<link rel="stylesheet" th:href="@{/lib/bootstrap/css/bootstrap.min.css}" />
+<script th:src="@{/lib/bootstrap/js/bootstrap.min.js}"></script>
+<style>
+/* Style inputs, select elements and textareas */
+input[type=text], select, textarea{
+  width: 1000px;
+  padding: 12px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+ box-sizing: border-box; 
+  resize: vertical;
+}
+
+/* Style the label to display next to the inputs */
+label {
+  padding: 12px 12px 12px 0;
+  display: inline-block;
+}
+
+/* Style the submit button */
+input[type=submit] {
+  background-color: #04AA6D;
+  color: white;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  float: right;
+}
+
+/* Style the container */
+.container {
+  border-radius: 5px;
+  background-color: #f2f2f2;
+  padding: 20px;
+}
+
+/* Floating column for labels: 25% width */
+.col-25 {
+  float: left;
+  width: 25%;
+  margin-top: 6px;
+}
+
+/* Floating column for inputs: 75% width */
+.col-30 {
+  float: left;
+  width: 100px;
+ 
+  margin-top: 6px;
+}
+
+/* Clear floats after the columns */
+.row:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+
+/* Responsive layout - when the screen is less than 600px wide, make the two columns stack on top of each other instead of next to each other */
+@media screen and (max-width: 600px) {
+  .col-25, .col-75, input[type=submit] {
+    width: 100%;
+    margin-top: 0;
+  }
+}
+
+ #dataTable tr:nth-child(1){      
+ counter-reset: rowNumber;
+					}
+#dataTable tr {
+ counter-increment: rowNumber;
+		}
+#dataTable tr td:first-child::before {
+ content: counter(rowNumber);
+min-width: 1em;
+margin-right: 0.5em;
+					} 
+					
+					
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type=number] {
+  -moz-appearance: textfield;
+}
+
+.qty{
+border:none;
+}
+.sellPrice{
+border:none;
+}
+.subtotal{
+  font-weight:bold;
+}
+
+
+.tableFixHead{ overflow: auto; height: 100px; }
+.tableFixHead thead tr th { position: sticky; top: 0; z-index: 1; }
+
+/* Just common table stuff. Really. */
+/* tableFixHead  { border-collapse: collapse; width: 100%; }
+th, td { padding: 8px 16px; }
+th     { background:#eee; } */
+
+.selected{
+ background:red;
+ }
+</style>
+</head>
+<body>
+<h1 style="text-align:center;font-weight: bold;">Sales Here</h1>
+
+
+
+<div class="container">
+    <p id="text" style="text-align:center; color:red; font-size:15pt; font-weight:bold;"></p>
+        <input type="text" name="catagoryProductId"  id="catagoryProductId" class="col-30"  placeholder="Product Code here.." style="text-align:center;font-weight: bold;"/>
+        <input type="submit" style="height:50px;" class="btn btn-primary" value="Search" id="search" />
+        
+     <br></br>
+    
+    </div>
+    
+    <div class="container">
+    <form>
+     <div style="font-weight:bold">
+     Invoice No<input type="text" id="invoice" style="height:30px; width:200px;">
+    </div>
+    <hr>
+    <table border="1" id="dataTable" style="text-align:center;float:left;">
+   <thead>
+    
+    <tr>
+  
+   <th>SL</th>
+     <th>Product Id</th>
+     <th>Item Description</th>
+      <th>Price Key</th>
+     <th>Available Quantity</th>
+     <th>Unit Price</th>
+     <th>Qty</th>
+     <th>Sub-Total</th>
+     <th>Unit of Quantity</th>
+     <th>Remove</th>
+    
+  
+    </tr>
+    </thead>
+  
+    <tbody>
+    
+    </tbody>
+     <tfoot></tfoot>
+    
+    
+    </table>
+     <hr>
+    <table  style="margin-left:900px; margin-top:0px; float:left">
+    <thead>
+    <tr>
+   <th> <a href="/customer/customer_form/"  id="addCustomer" style="text-decoration: none;">Create Customer</a></th>
+    </tr>
+     </thead>
+     <tbody>
+     <tr><td>Mobile<input type="number" autocomplete="off" name="mobile" id="mobile"></td></tr>
+     <tr><td>Customer Name<input type="text" name="name" id="name"  style="width:190px;height:30px; font-weight:bold;"></td></tr>
+     </tbody>
+    </table> 
+  
+    <table>
+   
+    <tr>
+     <td>
+      Vat:<input type="number" id="vat" class="form-control" value="0" style="width:200px;"  placeholder="Enter Vat">
+    </td>
+   
+    <td>
+     Discount: <input type="number" id="dis" class="form-control" value="0" style="width:200px;"  placeholder="Enter Discount">
+   </td>
+  <td>
+   Receivable Amount<input type="number" id="Receivable" class="form-control" style=" height:60px; width:250px; font-size:24pt;color:red;"  />
+   </td>
+ </tr>
+   
+   
+  </table>
+  <div style="margin-left:700px; color:red;">
+  Return<input type="number" class="form-control" id="retnAmount" style="height:60px; width:200px; font-size:24pt; color:red;" readonly placeholder="Return" />
+  
+   </div>
+   <div style="margin-left:700px; color:red;">
+  Dues<input type="text"  id="dues" class="form-control" style="width:200px; color:red;" readonly placeholder="Dues Amount">
+  
+   </div>
+  <br>
+   
+<div><input class="btn btn-primary btn-lg btn-block" id="btnSale" type="submit" value="Sale"/></div>
+   
+ 
+    </form>
+  </div>
+ <script th:src="@{/lib/jquery/jquery.min.js}"></script>
+<script>
+  $(document).ready(function(){
+	 //...............sale here......................//
+       	$("#btnSale").click(function(e){
+       		e.preventDefault();
+       		var isSaleQtyGreater=false;
+       		var isQtyNull=false;
+       		    var TableData = [];  
+           	$('#dataTable tbody tr').each(function(row, tr){ //if sale quantity greater than availabe quantity than work this method after click sale submit button.
+           		var qty=parseInt($(this).closest('tr').find('td').find('.qty').val());
+				var availableQty=parseInt($(this).closest('tr').find('.availableQty').text());
+				if(qty>availableQty){
+					//console.log(row.lehth);
+					isSaleQtyGreater=true;
+					return;
+				}else  if(qty==""){
+					isQtyNull=true;
+					
+					 return;
+				   }
+				   
+           		var unitPrice=$(".sellPrice").val();
+           		//var qty=$(".qty").val();
+           		var mobile=$("#mobile").val();
+           		 if(mobile==""){
+           			mobile="001";
+           		} 
+           		
+           	    TableData[row]={
+           	    	"catagoryProductId" : $(tr).find('td:eq(1)').text(),
+           	        "catagoryName" : $(tr).find('td:eq(2)').text(),
+           	         "purchasePrice" :$(tr).find('td:eq(3)').text(),
+           	         "unitPrice" : $(tr).find('td:eq(5)').find('input').val(),
+           	         "qty" : $(tr).find('td:eq(6)').find('input').val(),
+           	        "unitOfQuantity" : $(tr).find('td:eq(8)').text(),
+           	         "customerId":mobile
+           	      
+           	    }
+           	}); 
+           	
+           	 if(isSaleQtyGreater==true){
+           		
+           	 $("#text").text("Quantity Greater than Available Qty!");
+           	console.log(isSaleQtyGreater);
+           	 return false;
+           	} 
+           	
+           	if(isQtyNull){
+           	 $("#text").text(" Plsease Input Quantity !");
+           	 return false;
+           	}
+           	
+           	console.log("arr",TableData);
+           	console.log("arr Size",TableData.length);
+    		saveAllSale(TableData); //save method call here
+    		
+    		
+    		  window.setTimeout( function() {  //this method work auto refresh after sale.
+				  window.location.reload();
+				},1000);  
+       		
+       		});
+       	
+	   //.........................................sale end...................................................//
+	   
+		
+			
+			
+			
+			//...............................search customer name by mobile...............................................//
+			$("#mobile").on("keyup",function(){ //auto search customer name by mobile
+                var mobile=$("#mobile").val();
+                 if(mobile==""){
+       			 $("#name").val("");
+       		        }  
+                $.ajax({
+                	 url:`/customer/getCustomerName/${mobile}`,
+                	 type:'GET',
+                	 success: function(val){  
+                		$("#name").val(val);
+                	  },
+                	   error: function(){
+                	  }
+                });
+              });
+	//................................end customer search..............//	
+	
+	
+	//...................start Received value here for auto keyup.........................//
+			$("#Receivable").on("keyup",function(){
+				amountRecev();
+			});
+	//.................................end Received value...................................................//
+			
+	//.................Remove row from sale form.....................//		
+			$("#dataTable").on("click","#remove",function(){
+				 $(this).closest("tr").remove();
+				 subTotalAndGrandTotal(); //subTotalAndGrandTotal call here
+				 totalQty(); //totalQty call here 
+				 
+				 var total=Number($("#total").text());
+				 var dis=Number($("#dis").val());
+				 var vat=Number($("#vat").val());
+				 var totalVatCalculate=total*vat/100;
+				 var totalTotalVatSum=total+totalVatCalculate;
+				 var discountCal=totalTotalVatSum*dis/100;
+				 var totalDisCalculate=totalTotalVatSum-discountCal;
+				 $("#total").html(totalDisCalculate);
+			});
+		//.......................................end.............................................................//	
+			randomInvoice(); //random Method call here
+		
+		});
+		
+		  
+	 //   });
+  $("#search").on("click",function(e){
+	  var catagoryProductId=$("#catagoryProductId").val();
+	   
+	  $.ajax({
+		  type: 'GET',
+		  url: `/sale/get_stock_by_productId/${catagoryProductId}`,
+		  success : function(response) {
+			  const myObj=response[0];
+			  if(response.length>0){
+				  console.log(response[0]);
+				  createTableRow(myObj);
+			  }else{
+				  ///alert("Not Found");
+				  $("#text").text(" Not Found !");
+			  }
+				
+			  $("#catagoryProductId").val(""); //this value set blanck after search in input type
+			},
+			error : function() {
+				//alert("Enter Product Code");
+				$("#text").text(" Input Product Id !");
+			}
+		  
+	  });
+	  $("#text").text("");
+  });
+ //..............................table rows appned start....................................//
+	  
+  function createTableRow(data){
+	 if(data.productQuantity==0){   //quantity validation here
+		 var valu=data.catagoryName;
+		 $("#text").text(valu + " Not Available !");
+		 return false;
+	 }
+	  const removeButton='<input type="button" value="XXXX" id="remove" class="btn btn-danger"/>'
+	  
+			
+			  var productId=data.catagoryProductId;
+	          var pid=$("#catagoryProductId").val();
+              var isDuplicate=false;
+            $("#dataTable tbody tr").each(function(item, index){
+            	var tableExistingProductId=$(this).find('td:eq(1)').text();
+            	if(tableExistingProductId==pid){
+            		 
+            		 isDuplicate=true;
+            		return;
+                 	 
+            	}else{
+            		isDuplicate=false;
+            	}
+            });
+            if(isDuplicate){
+            	alert("This " +data.catagoryName+" Already Exist !");
+            	return;
+            }
+        
+    //....................table rows append here......................................//  
+				var markup = "<tr>" 
+				+ "<td id='serial'>"
+				   + "</td>" 
+				      + "<td class='id'>"+ data.catagoryProductId + "</td>"
+				      +  "<td>" +  data.catagoryName + "</td>" 
+				      + "<td>"  + data.priceKey + "</td>" 
+					  + "<td class='availableQty'>" + data.productQuantity+ "</td>" 
+					  +  "<td>" + '<input type="number" class="sellPrice" value="'+data.sellingPrice+'" style="height:40px; width:100px; text-align:center; font-weight:bold;"/>' + "</td>"
+					  +"<td >"+'<input type="number" class="qty"  style=" height:40px; width:100px; text-align:center; font-weight:bold;"/>'+ "</td>" 
+					  + "<td class='subtotal'>" +"</td>"
+					  + "<td class='unitOfQuantity'>"+data.unitOfQuantity+"</td>"
+					  + "<td>" +removeButton+"</td>"
+					  + "</tr>";
+						
+				$("#dataTable tbody").append(markup);
+				
+		        
+				  const tableTfootAppend = $("#dataTable tfoot");
+				  tableTfootAppend.empty();
+				  const tf="<tr>"+"<th style='text-align:right;' colspan='6'>"+"Total"+"</th>"+"<th id='quantity' style=' font-size:25px;'>"+"</th>"+"<th id='total' style=' font-size:25px;'>"+"</th>"+"</tr>";
+				  tableTfootAppend.append(tf);
+				  $("#text").text("");
+				
+//...................check sale value is greater than available quantity ? and auto calculte..............................//
+				
+				$("#dataTable tbody tr").keyup(function(){ 
+					   var qty=parseInt($(this).closest('tr').find('td').find('.qty').val());
+					   console.log("qty",qty);
+					   var unitPrice=$(this).closest('tr').find('.sellPrice').val();
+					   var availableQty=parseInt($(this).closest('tr').find('.availableQty').text());
+					   console.log("availableQty", availableQty);
+					   if(availableQty<qty){
+						   alert(qty + " Greater than Available Quantity !");
+						  
+					   } 
+					  
+					   var subtotal=Number(qty)* Number(unitPrice);
+					   $(this).closest('tr').find('.subtotal').html(subtotal);
+					   subTotalAndGrandTotal(); //SubAndGrandTotal Method call here for auto calculate
+					   totalQty(); //total quantity method call here for auto calculate
+					   
+					   if(data.productQuantity !=""){ //if quantity not null than hide error message.
+						   $("#text").text("");
+					   }
+					 	 
+				});
+				
+				
+				
+  }
+  //..........vat and discount auto calculate here...................//
+  
+  $("#vat,#dis").keyup(function(){
+		 var total=Number($("#total").text());
+		 var vat=Number($("#vat").val());
+		  var vatCalculate=vat*total/100;
+		  var totalWithVat=total+vatCalculate;
+		   var discount=Number($("#dis").val());
+		  var discountCalculate=discount*totalWithVat/100;
+		  var totalWithDiscount=totalWithVat-discountCalculate;  
+		  $("#total").html(totalWithDiscount.toFixed(2));
+		 
+		  
+	 });
+  //...............after key down vat and discount auto calculate here.............//
+  $("#vat,#dis").keydown(function(){
+	  subTotalAndGrandTotal();
+	  
+  });
+  
+  
+
+  
+  //.........................start subtotal here and grand total....................................//
+  function subTotalAndGrandTotal(){
+	  var total=0;
+	  $('tr').each(function(){
+		  var currRow=$(this);
+		  var sub=Number(currRow.find(".subtotal").text());
+		  if(sub>0){
+			  total+=sub;
+			 
+		  }
+		
+		  $("#total").html(total.toFixed(2));
+	  });
+	 
+	  
+  }
+  //................................end subtotal................................................//
+  
+  //...........total quantity calculate here...................................................//
+  function totalQty(){
+	  var totalQty=0;
+	  $('#dataTable tbody tr').each(function(){
+		  var qty=Number($(this).closest('tr').find('td').find('.qty').val());
+		     if(qty>0){
+		    	 totalQty+=qty;
+		     }
+	  });
+	 $("#quantity").html(totalQty);
+  }
+  
+   
+  
+ 
+
+
+//.......Her method call keyup function and claculte vat and discount.....................................//
+	function amountRecev(){
+		var total=Number($("#total").text());
+		var recv=Number($("#Receivable").val());
+		var due;
+		if(total>recv){
+			due=total-recv;
+			$("#dues").val(due.toFixed(2));
+			$("#retnAmount").val("0");
+		}else if(recv>total){
+		var result=recv-total;
+		$("#retnAmount").val(result.toFixed(2));
+		$("#dues").val("0");
+		
+		} else if(recv==total){
+			$("#retnAmount").val("0");
+			$("#dues").val("0");
+		} 
+		
+	}
+//..................................end.......................................//
+
+
+
+	 //.................................save sales here.........................................//
+		  //Save here all stock product by ajax
+   		function saveAllSale(TableData) {
+	//............save transaction from value 
+   			  var totalSale=parseInt($("#total").text());
+			  var receivedAmount=parseInt($("#Receivable").val());
+			  var returnAmount=parseInt($("#retnAmount").val());
+			 
+			   if(returnAmount>0){
+				    actualPaidAmount=parseInt(receivedAmount)-parseInt(returnAmount);
+			  }else{
+				    actualPaidAmount= parseInt(receivedAmount);
+			  }
+	//..........................end transaction...............................//	   
+			   
+	        var invoiceNo=$("#invoice").val();
+   			var customerName=$("#name").val();
+   			var customerMobile=$("#mobile").val();
+   			console.log("customerMobile",customerMobile);
+ 
+   			
+   			var dues=$("#dues").val();
+   			
+   			if(customerName==""){
+   				customerName="Customer Name Not Entered"
+   			}
+   			
+   			url='';
+   			if(dues && customerMobile){
+   				url=`/sale/save_sales/${invoiceNo}/${customerName}/${customerMobile}/${dues}/${totalSale}/${actualPaidAmount}`
+   			}else{
+   				url=`/sale/save_sales/${invoiceNo}/${customerName}/${null}/${null}/${totalSale}/${actualPaidAmount}`
+   			}
+   			$.ajax({
+   				url : url,
+   				type : 'post',
+   				//data:{"invoiceNo": invoiceNo},
+   				data: JSON.stringify(TableData),
+   			    contentType: "application/json",
+   				success : function(response) {
+   					//alert("Sales Insert Successfully ");
+   					$("#text").text("Sale Success");
+   				    $("#text").css({"color": "#6495ED"});
+   				
+   					
+   				},
+   				error : function() {
+   					//alert("an Error Occured");
+   				 $("#text").text(" an Error Occured !");
+   					
+   				}
+   			});
+   		}
+	  //.........................................end save sales.........................................//
+	 
+		  function randomInvoice(){
+			  let x = Math.floor((Math.random() * 1000000) + 1);
+			//  d("invoice").innerHTML = "Inv"+x;
+			  $("#invoice").val("INV"+x);
+	  }
+	  
+</script>
+</body>
+</html>

@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org">
+<head>
+<link rel="stylesheet" th:href="@{/lib/bootstrap/css/bootstrap.min.css}" />
+<script th:src="@{/lib/bootstrap/js/bootstrap.min.js}"></script>
+<meta charset="ISO-8859-1">
+<title>Insert title here</title>
+<style>
+table tr:nth-child(1){      /* this style used for auto increment Serial No in Data Table*/
+ counter-reset: rowNumber;
+					}
+table tr {
+ counter-increment: rowNumber;
+		}
+table tr td:first-child::before {
+ content: counter(rowNumber);
+min-width: 1em;
+margin-right: 0.5em;
+					}
+					
+.selected{
+ background:#DEB887;
+ }
+</style>
+</head>
+<body>
+<h1 style="text-align:center;">Current Stocks</h1>
+<a style="margin-left:200px;"href="/p/admin">Back</a>
+<hr>
+<table id="data" border="1" style="width: 60%; text-align:center; margin-top:50px; margin-left:300px; overflow-x:auto;">
+
+ <thead>
+  <tr>
+    <th>SL</th>
+    <th>Product Id</th>
+    <th>Item Description</th>
+    <th>Available Quantity</th>
+    <th>Purchase Price</th>
+     <th>Sub-Total</th>
+    <th>Date</th>
+  </tr>
+ </thead>
+ <tbody>
+  <tr th:each="p : ${getStockList}">
+    <td></td>
+    <td th:text="${p.catagoryProductId}"></td>
+     <td th:text="${p.catagoryName}"></td>
+     <td class="qty" th:text="${p.productQuantity}"></td>
+     <td class="purchasePrice" th:text="${p.purchasePrice}"></td>
+     <td class="subtotal"></td>
+     <td th:text="${p.insDate}"></td>
+     
+
+  </tr>
+ </tbody>
+</table>
+<hr>
+<br><br>
+<div style="margin-left:200px; font-size:20px;">
+Investment<input type="text" readonly style="text-align:center;font-size:22pt;" id="invest"/>
+Total QTY<input type="text" readonly style="text-align:center;font-size:22pt;" id="qty"/>
+</div>
+<br><br><br><br>
+<script th:src="@{/lib/jquery/jquery.min.js}"></script>
+  <script>
+  $(document).ready(function(){
+	  InvestMentAndQty();
+  });
+  
+  
+  
+  
+  function selectRow(){  //When selected row background color change will be selected .
+		var index;
+		var table=document.getElementById("data");
+		
+		for(var i =1; i<table.rows.length; i++){
+			table.rows[i].onclick = function(){
+			 if(typeof index !== 'undefined'){
+				 table.rows[index].classList.toggle("selected");
+				 
+			 }
+			
+				index=this.rowIndex;
+				this.classList.toggle("selected");
+				console.log(index);
+			};
+		}
+		
+	}
+   selectRow();
+   
+   
+   function InvestMentAndQty(){
+	   var ActualInvest=0;
+	   var totalQty=0;
+	   $("#data tr").each(function(){
+		   var purchasePrice=parseInt($(this).closest('tr').find(".purchasePrice").text());
+		   var qty=parseInt($(this).closest('tr').find(".qty").text());
+		   var investment=purchasePrice*qty;
+		   if(investment>0){
+			   ActualInvest+=investment;
+		   } 
+		  if(qty>0){
+			  totalQty+=qty;
+			  
+		  }
+		  $(this).find(".subtotal").text(investment);
+		   
+	   });
+	  $("#invest").val(ActualInvest+"/-");
+	  $("#qty").val(totalQty);
+   }
+  
+  </script>
+</body>
+</html>

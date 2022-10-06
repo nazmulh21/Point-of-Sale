@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="ISO-8859-1">
+<title>Insert title here</title>
+<style>
+ table tr:nth-child(2){      /* this style used for auto increment Serial No in Data Table*/
+ counter-reset: rowNumber;
+					}
+table tr {
+ counter-increment: rowNumber;
+		}
+table tr td:first-child::before {
+ content: counter(rowNumber);
+min-width: 1em;
+margin-right: 0.5em;
+					}
+					
+					
+					
+					
+#mytable{
+ text-align:center;
+		}
+					
+	.selected{
+ background:#DEB887;
+ }
+	
+</style>
+</head>
+<body>
+  <h1 style="text-align:center">Sent Back List</h1>
+   
+  
+  
+  <table id="mytable"  border="1" style="margin-left:40px; margin-right:20px; overflow-x:auto; border-collapse:collapse; text-align:center; ">
+   <tr>
+    <th>SL No</th>
+    <th>Invoice No</th>
+    <th>Brand Name</th>
+    <th>Product Name</th>
+    <th>Product Details</th>
+    <th>Quantity</th>
+    <th>Purchase Price</th>
+    <th>Selling Price</th>
+    <th>Price Key</th>
+    <th>Unit of Quantity</th>
+    <th> Reason</th>
+    <th>Sent Back By</th>
+    <th>Sent Back Date</th>
+    <th>Action</th>
+   
+   </tr>
+   <tr th:each="c: ${sent_back_list}">
+   
+   <td id="sl"></td>
+			 <td th:text="${c.invoiceNo}"></td> 
+			 <td th:text="${c.brandInfo.brandName}"></td> 
+			  <td th:text="${c.productInfo.productName}"></td> 
+			  <td th:text="${c.catagoryInfo.catagoryName}"></td> 
+			  <td th:text="${c.productQuanity}"></td> 
+			  <td th:text="${c.purchasePrice}"></td> 
+			  <td th:text="${c.sellingPrice}"></td>
+			  <td th:text="${c.priceKey}"></td>
+			  <td th:text="${c.unitOfQuanity}"></td>
+			  <td th:text="${c.comment}"></td>
+			  <td th:text="${c.sentBackBy}"></td>
+			  <td th:text="${c.sentBackDate}"></td>
+			  <td>
+			  
+			      <a th:href="@{/p/update/{invoiceNo}(invoiceNo=${c.invoiceNo})}" class="btn btn-primary">Process</a>
+			    
+                </td>
+    
+   
+   </tr>
+   
+  </table>
+ <p th:text="${msg}" style="text-align:center; font-size:24px; font-weight:bold; color:red;"/>
+  
+  <script>
+  function selectRow(){  //When selected row background color change will be selected .
+		var index;
+		var table=document.getElementById("mytable");
+		
+		for(var i =1; i<table.rows.length; i++){
+			table.rows[i].onclick = function(){
+			 if(typeof index !== 'undefined'){
+				 table.rows[index].classList.toggle("selected");
+				 
+			 }
+			
+				index=this.rowIndex;
+				this.classList.toggle("selected");
+				console.log(index);
+			};
+		}
+		
+	}
+   selectRow();
+  
+  </script>
+</body>
+</html>

@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="ISO-8859-1">
+<title>Insert title here</title>
+
+<link rel="stylesheet" th:href="@{/lib/bootstrap/css/bootstrap.min.css}" />
+<script th:src="@{/lib/bootstrap/js/bootstrap.min.js}"></script>
+<style>
+#permitTable tr:nth-child(1){      /* this style used for auto increment Serial No in Data Table*/
+ counter-reset: rowNumber;
+					}
+#permitTable tr {
+ counter-increment: rowNumber;
+		}
+#permitTable tr td:first-child::before {
+ content: counter(rowNumber);
+min-width: 1em;
+margin-right: 0.5em;
+					}
+
+
+
+#permitTable,thead,tr,th,td,tbody{
+  border: 1px solid black;
+  border-collapse: collapse;
+  text-align:center;
+  
+}
+
+.selected{
+ background:#7FFF00;
+ }
+ 
+ 
+ 
+ #commentData tr:nth-child(1){      /* this style used for auto increment Serial No in Data Table*/
+ counter-reset: rowNumber;
+					}
+#commentData tr {
+ counter-increment: rowNumber;
+		}
+#commentData tr td:first-child::before {
+ content: counter(rowNumber);
+min-width: 1em;
+margin-right: 0.5em;
+					}
+ 
+ #commentData tbody tr td{
+    width: 350px;
+     padding: 5px;
+}
+ 
+#commentData tr td {
+    width: 350px;
+     padding: 5px;
+     border:none !important;
+    text-align:justify;
+    word-spacing: -2px;
+    white-space: nowrap;
+}
+#commentData thead tr th {
+     border:none !important;
+    text-align:justify;
+     word-spacing: 10px;
+     white-space: nowrap;
+}
+ #commentData tbody{
+     border:none !important;
+     text-align:left;
+    text-align:justify;
+}
+
+#commentData {
+     border:none;
+     text-align:justify;
+     text-justify: inter-word;
+    
+} 
+#commentData thead{
+     border:none !important;
+     text-align:left;
+    text-align:justify;
+
+}
+
+
+
+#currentDeskData tr td {
+    width: 350px;
+     padding: 5px;
+     border:none !important;
+    text-align:justify;
+    word-spacing: -2px;
+    white-space: nowrap;
+}
+#currentDeskData thead tr th {
+     border:none !important;
+    text-align:justify;
+     word-spacing: 10px;
+     white-space: nowrap;
+}
+ #currentDeskData tbody{
+     border:none !important;
+     text-align:left;
+    text-align:justify;
+}
+
+#currentDeskData {
+     border:none;
+     text-align:justify;
+     text-justify: inter-word;
+    
+} 
+#currentDeskData thead{
+     border:none !important;
+     text-align:left;
+     text-align:justify;
+   }
+
+</style>
+</head>
+<body>
+<h1 style="margin-left:300px;">Sent Back Form</h1>
+<form style=" margin-left:20px; overflow-x:auto;" th:action="@{/p/sent_back_purchase}" th:object="${info}"  
+		method="GET">
+		
+<div class="form-group">
+    <label for="exampleFormControlTextarea1">Reason</label>
+    <textarea class="form-control" id="comment" name="comment" rows="2" required="required" style="width:600px;"></textarea>
+  </div>
+   
+   
+   <input type="hidden" th:value="${session.invoiceNo}"  id="invoice" name="invoiceNo" style="width:600px;"/>
+    
+  
+
+ <input type="submit" class="btn btn-primary btn-lg" id="SentBack" value="Send Back" style="margin-left:10px;"/>
+</form>
+
+          
+            
+        <br>
+<table border="1" style=" margin-left:20px; overflow-x:auto;" id="invTable">
+<tr>
+<th>Invoice No</th>
+<th  th:text="${invoiceNo}" id="invoiceNo" style=" margin-left:20px; font-family: Arial, Helvetica, sans-serif; font-size:18pt;"></th>
+</tr>
+
+
+</table >
+
+
+<br>
+<form id="myform">
+<table id="permitTable"  style="width: 80%; margin-left:20px; overflow-x:auto;">
+
+                <thead>
+                <tr>
+                   <th >SL</th>
+                    <th>Brand Name</th>
+                    <th>Product Name</th>
+                    <th>Product Details</th>
+                    <th>Product Code</th>
+                    <th>Quantity</th>
+                    <th>Purchases Price</th>
+                    <th>Sub-Total</th>
+                    <th>Selling Price</th>
+                    <th>Selling Sub</th>
+                    <th>Price Key</th>
+                     <th>Expired Date</th>
+                    <th>Unit of Quantity</th>
+                </tr>
+                </thead>
+                <tbody id="data">
+                <tr th:each="p : ${plist}">
+                      <td id="sl"></td>
+                       
+	                  <td  class="brandName" th:text="${p.brandInfo.brandName}"></td>
+	                  <td  class="productName" th:text="${p.productInfo.productName}"></td> 
+					  <td  class="catagoryName" th:text="${p.catagoryInfo.catagoryName}"></td> 
+					  <td  class="productId" th:text="${p.productId}"></td> 
+					  <td  class="quantity" th:text="${p.productQuanity}"></td> 
+					  <td  class="purchase" th:text="${p.purchasePrice}"></td> 
+					  <td  class="subtotal"></td> 
+					  <td  class="sellingPrice" th:text="${p.sellingPrice}"></td>
+					  <td  class="sellingSub"></td>
+					  <td  class="priceKey" th:text="${p.priceKey}"></td>
+					   <td  class="unitOfQuantity" th:text="${p.expiredDate}"></td>
+					  <td  class="unitOfQuantity" th:text="${p.unitOfQuanity}"></td>
+					  
+					  
+                   
+                </tr>
+                <tfoot>
+                <tr>
+               <th colspan="5">Total:</th><th id="q"> </th><td ></td><th id="gtotal"></th><th></th><th colspan="1" id="sellingTotal"></th>
+                </tr>
+                </tfoot>
+                </tbody>
+            </table>
+            <br><br>
+           
+           
+            </form>
+            <br><br>
+            <hr>
+            <table id="currentDeskData"  style="margin-left:20px;  overflow-x:auto;">
+            <thead>
+            
+            </thead>
+            <tbody>
+            
+            </tbody>
+            
+            </table>
+            <br>
+             <hr> <hr>
+              <div style="margin-left:60px; font-size:12px; font-weight:bold;">History</div>
+            <table id="commentData" style="margin-left:20px; overflow-x:auto;">
+           
+             <thead>
+             </thead>
+             <tbody>
+             
+             
+             </tbody>
+            </table>
+            <br>
+            <script th:src="@{/lib/jquery/jquery.min.js}"></script>
+            <script>
+             $(document).ready(function(){
+            	 var totalQuantity=0;  // Here sum of quantity
+            	 $('tr').each(function(){
+            		 $(this).find('.quantity').each(function(){
+            			 var quantity=$(this).text();
+            			 if(quantity.length !==0){
+            				 totalQuantity+=parseFloat(quantity);
+            			 }
+            		 });
+            		 
+            	 });
+            	 //alert(total);
+            	 document.getElementById("q").innerHTML=totalQuantity;
+            	 
+      //..............................end.......................................//      	 
+            	 
+            	 var subTotal=0;
+      				var gtotal = 0;
+            	 var arr=[];
+            	   // Here Multiply Quantity and Purchase price
+            	 $('tr').each(function(){
+        			 var currRow = $(this);
+        			 var purchase = $(this).find(".purchase").text(),
+        			 		quantity = $(this).find(".quantity").text();
+        			 
+        			// console.log("q: " + quantity + " || p: " + purchase)
+        			 
+        			 subTotal = parseInt(purchase) * parseInt(quantity);
+        			 
+        			 if (subTotal > 0) {
+        				 gtotal += subTotal
+        			 } 
+        			 
+        			// console.log("subTotal: " + subTotal);
+        			 currRow.find(".subtotal").text(subTotal);
+        			 arr.push(subTotal);
+        			 
+            		 /* $(this).find('.quantity' && '.purchase').each(function() {
+            			 var quantity=$(this).text();
+            			 //console.log(quantity);
+            			 var purchase=$(this).text();
+            			// console.log(purchase);
+            				 subTotal=parseInt(quantity*purchase);
+            				 arr.push(subTotal);
+            				 console.log(subTotal)
+            		 }); */
+            		 
+            	 });
+            	   $("#gtotal").text(gtotal);
+            	   
+            	
+            	 /* console.log(arr.length);
+            	 var GTotal=0;
+            	 $.each(arr,function(i){
+            		
+            		 document.getElementById("subTotal").innerHTML=arr[i];
+            		 GTotal+=arr[i];
+          		 
+          	   }); */
+            	 //document.getElementById("gtotal").innerHTML="GTotal:"+GTotal;
+          	   
+          	   //............Selling Sub and Total......................//
+            	   var subTotal=0;
+     				var gtotal = 0;
+           	 var arr=[];
+           	   // Here Multiply Quantity and Selling Price
+           	 $('tr').each(function(){
+       			 var currRow = $(this);
+       			 var sellingPrice = $(this).find(".sellingPrice").text(),
+       			 		quantity = $(this).find(".quantity").text();
+       			 
+       			// console.log("q: " + quantity + " || p: " + sellingPrice)
+       			 
+       			 subTotal = parseInt(sellingPrice) * parseInt(quantity);
+       			 
+       			 if (subTotal > 0) {
+       				 gtotal += subTotal
+       			 } 
+       			 
+       			// console.log("subTotal: " + subTotal);
+       			 currRow.find(".sellingSub").text(subTotal);
+       			 arr.push(subTotal);
+       			 
+           		 
+           	 });
+           	  $("#sellingTotal").text(gtotal);
+           	  
+           	  
+          //...........................................Value in array for Add to stock....................................................................// 	  
+           	/*$("table tbody tr td").each(function(i,e){
+                console.log("values "+$(this).html());
+              });*/
+              
+          /* 	$(function() {
+           	  var keys = [];
+           	  var myData = {};
+           	  $("table thead th").each(function() {
+           	    var k = $(this).text().trim().toLowerCase();
+           	    keys.push(k);
+           	    myData[k] = [];
+           	  });
+           	  $("table tbody tr").each(function(i, el) {
+           	    $.each(keys, function(k, v) {
+           	      myData[v].push($("td:eq(" + k + ")", el).text().trim());
+           	    });
+           	  });
+           	  console.log(keys.push(myData));
+           	console.log(keys);
+           	});*/
+           	
+           	var TableData = [];
+           	var c=document.getElementById("comment").value;
+            console.log("commenttt "+c);
+           	$('#data tr').each(function(row, tr){
+           	    TableData[row]={
+           	        "comment" : c
+           	        , "productQuantity" :$(tr).find('td:eq(5)').text()
+           	        , "purchasePrice" : $(tr).find('td:eq(6)').text()
+           	        , "sellingPrice" : $(tr).find('td:eq(8)').text()
+           	       , "priceKey" : $(tr).find('td:eq(10)').text()
+           	        
+           	    }
+           	}); 
+           //	TableData.shift(); 
+           	console.log(TableData);
+           	//.........save stocks method call here.............//
+           	/* $("#").on("click",function(e){
+           		e.preventDefault();
+           		//saveAllStocks(TableData);
+           		var comment=document.getElementById("comment").value;
+           		var invoiceNo=document.getElementById("invoice").value;
+           		console.log("commenttt " +comment);
+           		console.log("invoiceNo "+invoiceNo);
+           		//var obj={'comment':comment,'invoiceNo':invoiceNo};
+           		 // console(JSON.stringfy(obj));
+           		$.ajax({
+           			type: get,
+           			contentType: "application/json charset=utf-8",
+           			url: "/p/sent_back_purchase",
+           			data: JSON.stringify({'comment':comment,'invoiceNo':invoiceNo}),
+           			success: function(success){
+           				alert("Data Insert");
+           			},
+           			error: function(error){
+           				alert("Error");
+           			},
+           		});
+           		
+           		
+            }); */
+            
+            commentsList(); //show history
+            currentDesk(); //show current desk..
+             });
+             
+             
+           //.................................Start Selected Background color...............................................//  
+             function selectRow(){  //When selected row background color change will be selected .
+     			var index;
+     			var table=document.getElementById("permitTable");
+     			
+     			for(var i =1; i<table.rows.length; i++){
+     				table.rows[i].onclick = function(){
+     				 if(typeof index !== 'undefined'){
+     					 table.rows[index].classList.toggle("selected");
+     					 
+     				 }
+     				
+     					index=this.rowIndex;
+     					this.classList.toggle("selected");
+     					console.log(index);
+     				};
+     			}
+     			
+     		}
+             selectRow();
+             
+   //.......................................start saving stocks....................................................................//        
+        		   
+          
+           //Save here all stock product by ajax
+     		function saveAllStocks(TableData) {
+     			 var invoiceNo=$("#invoiceNo").text();
+                  console.log("invoiceNo ::::"+invoiceNo);
+     			$.ajax({
+     				url : '/sent_back_purchase/'+invoiceNo,
+     				type : 'post',
+     				//data:{"invoiceNo": invoiceNo},
+     				data: JSON.stringify(TableData),
+     			    contentType: "application/json",
+     				success : function(response) {
+     					alert("Sent Back Successfully ");
+     					
+     					
+     				},
+     				error : function() {
+     					alert("an Error Occured");
+     				}
+     			});
+     		}
+   
+     		 function commentsList(){
+            	 var inv= $("#invoice").val();
+            	 console.log("invvv",inv);
+ 				$.ajax({
+      				url : '/comment/commentList/'+inv,
+      				type : 'GET',
+      			    contentType: "application/json",
+      				success : function(response) {
+      					 var tableThead=$('#commentData thead');
+      				      tableThead.empty();
+      					 const th="<tr style='background:#98FB98;border:none;'>"+"<th>"+"#"+"</th>"+"<th>"+"Status"+"</th>"+"<th>"+"Comments"+"</th>"+"<th>"+"Process Time"+"</th>"+"</tr>";
+      					tableThead.append(th);
+      					 $.each(response,function(key, value){
+      						var tableBody=$('#commentData tbody');
+      					      tableBody.append('<tr style="border:none;"><td style="width:10px;">'+ '</td> <td>' +value.status + '</td> <td>' + value.comments + '</td><td>' + value.processTime + '</td> </tr>');
+      					     
+      					}); 
+      					
+      					
+      				},
+      				error : function() {
+      					alert("an Error Occured");
+      				}
+      			});
+             }
+     		 
+     		 
+     		function currentDesk(){
+     			var inv= $("#invoice").val();
+				console.log("invoice vv",inv);
+				$.ajax({
+     				url : '/currentDesk/curent_status/'+inv,
+     				type : 'GET',
+     			    contentType: "application/json",
+     				success : function(response) {
+     					  var tableThead=$('#currentDeskData thead');
+     				      tableThead.empty();
+     					  const th="<tr  style='background:#98FB98; border:none;'>"+"<th>"+"Currend Desk"+"</th>"+"</tr>";
+     					  tableThead.append(th);
+     					 $.each(response,function(key, value){
+     						  var tableBody=$('#currentDeskData tbody');
+     					      tableBody.append('<tr style="border:none;"> <td>' +value.currentDesk + '</td></tr>');
+     					    
+     					}); 
+     					
+     					
+     				},
+     				error : function() {
+     					alert("an Error Occured");
+     				}
+     			});
+            }
+              
+            </script>
+</body>
+</html>

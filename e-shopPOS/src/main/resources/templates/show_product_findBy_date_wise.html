@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org">
+	
+	<link rel="stylesheet" th:href="@{/lib/bootstrap/css/bootstrap.min.css}" />
+    <script th:src="@{/lib/bootstrap/js/bootstrap.min.js}"></script>
+   
+<head>
+<meta charset="ISO-8859-1">
+<title>Insert title here</title>
+<style>
+
+ #dataTable tr:nth-child(1){      
+ counter-reset: rowNumber;
+					}
+#data tr {
+ counter-increment: rowNumber;
+		}
+#data tr td:first-child::before {
+ content: counter(rowNumber);
+min-width: 1em;
+margin-right: 0.5em;
+					} 
+</style>
+</head>
+<body>
+
+<h2 style="text-align:center;">Date Wise Purchase Product </h2>
+<hr>
+  
+     <table style="margin-left:300px;">
+      <tr>
+         <td>From Date</td>
+         <td>:</td>
+         <td><input type="text" name="insDate" id="stratDat"/></td>
+       
+         <td>To Date</td>
+         <td>:</td>
+        <td><input type="text" name="insDate2" id="endDate"/></td>
+        <td><input type="submit" id="btnSubmit" value="Search"/></td>
+      </tr>
+     
+     </table>
+     <br></br>
+   
+   <table id="data" border="1" style="text-align:center; margin-left:250px;">
+     <thead>
+     </thead>
+     <tbody>
+     </tbody>
+   </table>
+   <br>
+   <hr>
+   <div style="margin-left:150px; font-size:25px; font-weight:bold;">
+    Investment<input type="text" id="investment" readonly style="text-align:center;" />  Quantity<input type="text" readonly id="quantity" style="text-align:center;" >
+   </div>
+   <hr>
+   <br><br>
+  <p th:text="${noDataFound}" style="text-align:center; font-size:24px; font-weight:bold; color:red;"/>
+    	
+   
+      <script th:src="@{/lib/jquery/jquery.min.js}"></script>
+     <script th:src="@{/lib/datetimepicker/jquery.datetimepicker.full.min.js}"></script>
+     <link rel="stylesheet" th:href="@{/lib/datetimepicker/jquery.datetimepicker.min.css}" />
+     
+   <script>
+   $(document).ready(function(){
+	   $("#btnSubmit").on("click",function(){
+		   var startDate=$("#stratDat").val();
+		   var endtDate=$("#endDate").val();
+		   if(startDate==0 && endtDate==0){
+			   alert("Select Date");
+			   return false;
+		   }
+		   $.ajax({
+			   url:`/p/findByDateProduct/${startDate}/${endtDate}`,
+			   type:'GET',
+			  success: function(res){
+				 
+				      var tableThead=$('#data thead');
+				      tableThead.empty();
+				     const th="<tr>"+"<th>"+"SL"+"</th>"+"<th>"+"Brand"+"</th>"+"<th>"+"Product Name"+"</th>"+"<th>"+"Item Description"+"</th>"+"<th>"+"Quantity"+"</th>"+"<th>"+"Purchase Price"+"</th>"+"<th>"+"Sub-Total"+"</th>"+"<th>"+"Date"+"</th>"+"</tr>";
+				     tableThead.append(th);
+				  $.each(res, function (key, value) 
+						  {
+					   
+					      var tableBody=$('#data tbody');
+					      tableBody.append('<tr><td>'+ '</td> <td>' + value.brandInfo.brandName + '</td>  <td>' + value.productInfo.productName + '</td> <td>' + value.catagoryInfo.catagoryName + '</td><td class="qty">' + value.productQuanity + '</td><td class="purchasePrice">' + value.purchasePrice + '</td><td class="subtotal">' + '</td><td>' + value.insDate + '</td></tr>');
+						  })
+						  totalInvestmentAndQuantity();
+			  }
+		   });
+		  
+	   });
+	   
+	   $.datetimepicker.setLocale('de');
+	   $('#stratDat').datetimepicker({
+	    i18n:{
+	     de:{
+	      months:[
+	       'Januar','February','March','April',
+	       'May','Jun','July','August',
+	       'September','October','November','December',
+	      ],
+	      dayOfWeek:[
+	       "So.", "Mo", "Di", "Mi",
+	       "Do", "Fr", "Sa.",
+	      ]
+	     }
+	    },
+	    timepicker:false,
+	    format:'d-m-Y'
+	   });
+	   
+	   $.datetimepicker.setLocale('de');
+	   $('#endDate').datetimepicker({
+	    i18n:{
+	     de:{
+	    	 months:[
+	  	       'Januar','February','March','April',
+	  	       'May','Jun','July','August',
+	  	       'September','October','November','December',
+	  	      ],
+	      dayOfWeek:[
+	       "So.", "Mo", "Di", "Mi",
+	       "Do", "Fr", "Sa.",
+	      ]
+	     }
+	    },
+	    timepicker:false,
+	    format:'d-m-Y'
+	   });
+	   
+	  
+   });
+   
+   function totalInvestmentAndQuantity(){
+	   var totalInvest=0;
+	   var quantity=0;
+	  $("#data tbody tr").each(function(){
+		   var purchase=parseInt($(this).closest('tr').find(".purchasePrice").text());
+		   var qty=parseInt($(this).closest('tr').find(".qty").text());
+		   var invest=purchase*qty;
+		   if(invest>0){
+			   totalInvest+=invest;
+		   }
+		   $(this).closest('tr').find(".subtotal").text(invest);
+		   
+		   if(qty>0){
+			   quantity+=qty;
+		   }
+		  
+		   
+	   }); 
+	  $("#investment").val(totalInvest);
+	  $("#quantity").val(quantity);
+	  
+   }
+  
+   </script>
+</body>
+</html>

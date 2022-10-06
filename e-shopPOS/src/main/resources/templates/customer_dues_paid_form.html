@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
+<head>
+<meta charset="ISO-8859-1">
+<title>Insert title here</title>
+
+<link rel="stylesheet" th:href="@{/lib/bootstrap/css/bootstrap.min.css}" />
+<script th:src="@{/lib/bootstrap/js/bootstrap.min.js}"></script>
+
+<style>
+#mytable tr:nth-child(2){      /* this style used for auto increment Serial No in Data Table*/
+ counter-reset: rowNumber;
+					}
+#mytable tr {
+ counter-increment: rowNumber;
+		}
+#mytable tr td:first-child::before {
+ content: counter(rowNumber);
+min-width: 1em;
+margin-right: 0.5em;
+		}
+		
+		
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type=number] {
+  -moz-appearance: textfield;
+}
+
+
+#commentData tr:nth-child(1){      /* this style used for auto increment Serial No in Data Table*/
+ counter-reset: rowNumber;
+					}
+#commentData tr {
+ counter-increment: rowNumber;
+		}
+#commentData tr td:first-child::before {
+ content: counter(rowNumber);
+min-width: 1em;
+margin-right: 0.5em;
+	}
+	
+
+#commentData tr td {
+    width: 150px;
+     padding: 5px;
+     border:none !important;
+    text-align:justify;
+    word-spacing: -2px;
+    white-space: nowrap;
+}
+#commentData thead tr th {
+     border:none !important;
+    text-align:justify;
+     word-spacing: 10px;
+     white-space: nowrap;
+}
+ #commentData tbody{
+     border:none !important;
+     text-align:left;
+    text-align:justify;
+}
+
+#commentData {
+     border:none;
+     text-align:justify;
+     text-justify: inter-word;
+    
+} 
+#commentData thead{
+     border:none !important;
+     text-align:left;
+     text-align:justify;
+   }
+   
+ #commentData tr:hover{
+  background:#F0FFF0;
+  
+ }
+ 
+ #anchor{
+ text-decoration: none;
+ }
+ 
+ #anchor:hover{
+   background:#0000FF;
+   color:white
+ }
+
+
+.selected{
+ background:#FFF8DC;
+ }
+
+table tr td #advance{
+  display:none;
+}
+</style>
+</head>
+<body>
+<h2 style="text-align:center;">Customer Dues Collection</h2>
+<hr>
+<div  style="margin-left:420px; font-weight:bold;">
+   Advance:<input type="text" id="advanceAmount" style=" font-size:20px; font-weight:bold; color:green; text-align:center;" readonly />
+</div>
+<br>
+<hr>
+<p id="msg" style="text-align:center; font-size:25px; color:green; "></p>
+
+<br></br>
+<div style="margin-left:150px; font-size:20px; font-weight:bold;">
+Customer Name:<input type="text"  id="customerName" readonly style="font-weight:bold; text-align:center;"/> Customer Mobile:<input type="text" th:value="${customerMobile}" readonly id="customerMobile"  style="font-weight:bold;" />  <a href="/dues/dues_customer_list_show" style="margin-left:100px; ">Back</a>
+</div>
+<br>
+
+<hr>
+
+<table border="1" style="margin-left:200px; margin-top:50px; overflow-x:auto; width:800px; text-align:center;  border-collapse: collapse;" id="mytable">
+<thead>
+<tr>
+<th>SL</th>
+<th>Invoice No</th>
+<th>Dues</th>
+<th>Date</th>
+<th>Details</th>
+</tr>
+</thead>
+
+    <tbody>
+
+           <tr style="text-align:centere;" id="trr"  th:each="c: ${duesList}">
+           
+             <td id="sl"></td>
+             <td class="invoice" th:text="${c.invoiceNo}"></td> 
+			 <td class="dues" th:text="${c.dues}"></td> 
+			 <td class="customerMobile" th:text="${c.duesDate}"></td>
+			  
+			  <td>
+			  
+			      <a th:href="@{/dues/get_dues/{invoiceNo}(invoiceNo=${c.invoiceNo})}" id="anchor" >Invoice Details</a>
+			    
+                </td>
+			</tr> 
+			
+		</tbody>
+			  
+		
+	</table>
+	<br>
+	<table style="margin-left:400px;">
+	
+	<tr>
+	<td>Dues Payable</td>
+	<td><input type="number" readonly id="totalDues"  style="font-size:18pt; text-align:center; color:red;"/></td> <td></td><td></td><td style="color:red;">Advance<input type="checkbox" id="chk" /></td><td><input type="text" id="advance" readonly style="text-align:center;"></td>
+	</tr>
+	<tr>
+	<td>Pay Dues </td>
+	<td><input type="number"  id="payDues"  style="font-size:18pt; text-align:center;" required="required"/></td>
+	</tr>
+	
+	 <tr>
+	  <td style="font-size:20px; color:red;">Return</td><td><input type="text" id="rtn" style="width:280px; height:80px; text-align:center; font-size:30px; color:red;" readonly/></td>
+	</tr> 
+	</table>
+	<br><br>
+	<input type="submit" value="Dues Process" class="btn btn-success" id="duesBtn" style="margin-left:400px; width:400px; height:50px;"/>
+	<br><br>
+	
+	
+	
+           
+             <!--  <div style="margin-left:60px; font-size:12px; font-weight:bold;">History</div> -->
+            <table  id="commentData" style="margin-left:20px;  overflow-x:auto;">
+           
+             <thead>
+             </thead>
+             <tbody>
+             
+             
+             </tbody>
+               
+            </table>
+              <hr>
+	<br><br><br><br>
+	<script th:src="@{/lib/jquery/jquery.min.js}"></script>
+	<script>
+	$(document).ready(function(){
+		showCustomerAdvanced();
+		
+		
+		var total=0;
+		
+		$("#mytable tr").each(function(){
+			 var price= parseInt($(this).closest('tr').find('td:eq(2)').text());
+			 if(price>0){
+				 total+=price;
+				 
+			 }
+			 
+			
+			
+			 
+		});
+		
+		$("#totalDues").val(total);
+		invoiceCustomerNameAndCustomerMobileShow();//
+		
+		 $("#duesBtn").click(function(){
+			 advanceSave();
+			 duesUpdate();
+			  window.setTimeout( function() {  //this method work auto refresh after purchase save.
+				  window.location.reload();
+				},1000);  
+			  
+			  $("#msg").text("Dues Paid Success ");
+		}); 
+		
+		selectRow();
+		//..............
+		autoCal();
+		
+		//...........here take advance...................................//
+		takeAdvanceAndSetShowField();
+		
+		//............dues payment from Customer Advance..........................
+		paymentFromAdvance();
+		//.............................
+		setZeroIfAdvanceEmpty();
+       
+		
+	});
+	//................mutiple dues update here.....................................//
+	function duesUpdate(){
+		var invoiceNo="";
+		var payDues=parseInt($("#payDues").val());
+		var remainingDue=0;
+		var dues=0;
+		
+		$("#mytable tbody tr").each(function(){
+			 invoiceNo=$(this).closest('tr').find('td:eq(1)').text();
+			 remainingDue=parseInt($(this).find(".dues").text());
+		    if(remainingDue>payDues){
+		    	remainingDue=remainingDue-payDues;
+		    	updateDuesAjax(invoiceNo,remainingDue);
+		    	return false;
+		    	
+		    
+		    }else if(remainingDue<payDues){
+		    	payDues=payDues-remainingDue;
+		    	remainingDue=0;
+		    	updateDuesAjax(invoiceNo,remainingDue);
+		    }else if(remainingDue==payDues){
+		    	remainingDue=remainingDue-payDues;
+		    	updateDuesAjax(invoiceNo,remainingDue);
+		    }
+		    
+			
+			
+			
+		});
+		  
+		
+		 
+		
+		
+	}
+	
+	
+	//....................customer name and customer mobile number show here...........................//
+	 function invoiceCustomerNameAndCustomerMobileShow(){
+		  var customerMobile=$("#customerMobile").val();
+		  console.log("mobile",customerMobile);
+		$.ajax({
+			url:`/dues/get_dues_custome_mobile_wise/${customerMobile}`,
+			type:'get',
+			success :function(response){
+				//alert(JSON.stringify(response));
+				$.each(response,function(i,v){
+					document.getElementById("customerName").defaultValue=v.customerName;
+				});
+				
+			},
+			error :function(){
+				alert("error");
+			}
+		});
+	}
+	
+
+	
+	function selectRow(){
+		var index;
+		var table=document.getElementById("mytable");
+		
+		for(var i =1; i<table.rows.length; i++){
+			table.rows[i].onclick = function(){
+			 if(typeof index !== 'undefined'){
+				 table.rows[index].classList.toggle("selected");
+				 
+			 }
+			
+				index=this.rowIndex;
+				this.classList.toggle("selected");
+				console.log(index);
+			};
+		}
+		
+	}
+//...............................multiple dues update by ajax here.......ajax method call where needed..................//	
+	function updateDuesAjax(invoiceNo,remainingDue){
+		$.ajax({
+			url:`/dues/multiple_dues_update/${invoiceNo}/${remainingDue}`,
+			type:'put',
+			contentType: "application/json; charset=utf-8",
+			success : function(response) {
+				
+				},
+				error : function() {
+					alert("an Error Occured");
+				}
+		}); 
+	}
+	//.....................here pay dues, total dues and return field together auto calculate here..................//
+	function autoCal(){
+		$("#payDues").keyup(function(){
+			var totalDues=parseInt($("#totalDues").val());
+			var payDues=parseInt($("#payDues").val());
+			if(payDues>totalDues){
+				var returnValue=payDues-totalDues;
+				$("#rtn").val(returnValue);
+			}else if(payDues<=totalDues){
+				$("#rtn").val(0);
+			}
+			
+		});
+	}
+	//..................................if customer has advance than show advance here.................//
+	function showCustomerAdvanced(){
+		var customerMobile=$("#customerMobile").val();
+		$.ajax({
+			url:`/advance/getAdvance/${customerMobile}`,
+			type:'get',
+			success :function(res){
+				$.each(res,function(i,v){
+					
+					$("#advanceAmount").val(v.advance);
+					
+					
+				});
+			}
+		});
+		
+		
+	}
+	//..........................take advance and set hide input field by select check box................//
+	function takeAdvanceAndSetShowField(){
+		$("#chk").change(function() {
+		    if(this.checked) {
+		    	$("#advance").show();
+		    	var totalDues=parseInt($("#totalDues").val());
+				var payDues=parseInt($("#payDues").val());
+				
+				if(payDues>totalDues){
+					$("#payDues").val(totalDues);
+					var advance=payDues-totalDues;
+					$("#advance").val(advance);
+					$("#rtn").val(0);
+				}
+				
+		    }
+		  else 
+		    {
+			  
+			  var adv=parseInt($("#advance").val());
+	    	   var payDues=parseInt($("#payDues").val());
+	    	   var totalPayDues=adv+payDues;
+	    	   $("#payDues").val(totalPayDues);
+	    	   var advanc=$("#advance").val(0);
+	    	   $("#rtn").val(adv);
+	    	   
+	    	   $("#advance").hide();
+	    	   
+	    	  
+		    }
+		});
+		
+		
+	}
+	//........................if has advance than payment completed from advance here.....................//
+	function paymentFromAdvance(){
+		    var click=0;
+		    console.log("click",click);
+		    var i=0;
+		    
+		$("#payDues").click(function(){
+			if(click==1){
+				//alert("single click pay duse");
+				return false;
+			}
+			var advanceAmount=parseInt($("#advanceAmount").val());
+			var totalDues=parseInt($("#totalDues").val());
+			 if(advanceAmount>0 && advanceAmount>totalDues){
+				  var remainingAdvance=advanceAmount-totalDues
+				  $("#payDues").val(totalDues);
+				  $("#advanceAmount").val(remainingAdvance);
+				   click+=i+1;;
+				   console.log("click",click);
+			  }else if(advanceAmount>0 && advanceAmount<=totalDues){
+				  $("#payDues").val(advanceAmount);
+				  $("#advanceAmount").val(0);
+				 
+			  }
+			 
+		});
+	
+	}
+	//................................if advance amount field null then set zero here.........................//
+	function setZeroIfAdvanceEmpty(){
+		var adv=$("#advanceAmount").val();
+		 if(adv==""){
+			 var value=parseInt(0);
+			 $("#advanceAmount").val(value);
+		 }
+		 
+	}
+	
+	//.......advance save or if advance already has then update advance here....................
+	function advanceSave(){
+		var customerMobile=$("#customerMobile").val();
+		
+		var customerName=$("#customerName").val();
+		console.log("customerName",customerName);
+		var advance=parseInt($("#advance").val());
+		var setAdvanceZero="";
+		var newAdvanceAndAdvanceAmount="";
+		if(isNaN(advance)){
+			setAdvanceZero=0;
+			console.log("advance if ",advance);
+		}else{
+			newAdvanceAndAdvanceAmount=parseInt(setAdvanceZero) + parseInt($("#advanceAmount").val());
+			console.log("advance else ",advance)
+		}
+		console.log("advance",advance);
+		$.ajax({
+			url:`/advance/getAdvance_before_save/${customerMobile}/${newAdvanceAndAdvanceAmount}/${customerName}`,
+			type:'post',
+			success :function(res){
+				alert("Success save advance");
+			},
+			error :function(){
+				alert("error advance save");
+			}
+		});
+		
+	}
+	</script>
+</body>
+</html>

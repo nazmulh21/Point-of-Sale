@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
+<head>
+<meta charset="ISO-8859-1">
+<title>Insert title here</title>
+
+<link rel="stylesheet" th:href="@{/lib/bootstrap/css/bootstrap.min.css}" />
+<script th:src="@{/lib/bootstrap/js/bootstrap.min.js}"></script>
+
+<style>
+#mytable tr:nth-child(2){      /* this style used for auto increment Serial No in Data Table*/
+ counter-reset: rowNumber;
+					}
+#mytable tr {
+ counter-increment: rowNumber;
+		}
+#mytable tr td:first-child::before {
+ content: counter(rowNumber);
+min-width: 1em;
+margin-right: 0.5em;
+		}
+		
+		
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type=number] {
+  -moz-appearance: textfield;
+}
+
+
+#commentData tr:nth-child(1){      /* this style used for auto increment Serial No in Data Table*/
+ counter-reset: rowNumber;
+					}
+#commentData tr {
+ counter-increment: rowNumber;
+		}
+#commentData tr td:first-child::before {
+ content: counter(rowNumber);
+min-width: 1em;
+margin-right: 0.5em;
+	}
+	
+
+#commentData tr td {
+    width: 150px;
+     padding: 5px;
+     border:none !important;
+    text-align:justify;
+    word-spacing: -2px;
+    white-space: nowrap;
+}
+#commentData thead tr th {
+     border:none !important;
+    text-align:justify;
+     word-spacing: 10px;
+     white-space: nowrap;
+}
+ #commentData tbody{
+     border:none !important;
+     text-align:left;
+    text-align:justify;
+}
+
+#commentData {
+     border:none;
+     text-align:justify;
+     text-justify: inter-word;
+    
+} 
+#commentData thead{
+     border:none !important;
+     text-align:left;
+     text-align:justify;
+   }
+   
+ #commentData tr:hover{
+  background:#F0FFF0;
+  
+ }
+ 
+ 
+
+</style>
+</head>
+<body>
+<h2 style="text-align:center;">Dues Collection</h2>
+
+<br></br>
+<div style="margin-left:200px;">
+Customer Name:<input type="text" id="customerName" readonly/> Customer Mobile:<input type="text" readonly id="customerMobile"/>  <a href="" id="back" style="margin-left:100px; font-size:20pt;">Back</a>
+</div>
+<br>
+<hr>
+<div  style="margin-left:200px;  margin-top:10px; ">
+Invoice No<input type="text" th:value="${invoiceNo}" id="invoice" readonly style="text-align:center; font-weight:bold; font-size:18px;" >
+</div>
+<table border="1" style="margin-left:200px; margin-top:50px; overflow-x:auto; width:800px; text-align:center;  border-collapse: collapse;" id="mytable">
+<tr>
+<th>SL</th>
+<th>Product Items</th>
+<th>Unit Price</th>
+<th>Qty</th>
+<th>Sub-Total</th>
+<th>Date</th>
+</tr>
+
+<th:block th:each="c: ${duesList}">
+
+           <tr style="text-align:centere;" id="trr" >
+           
+             <td id="sl"></td> 
+			 <td class="dues" th:text="${c.catagoryName}"></td> 
+			  <td class="price" th:text="${c.unitPrice}"></td> 
+			 <td class="qty" th:text="${c.qty}"></td> 
+			  <td class="subtotal"></td> 
+			  <td th:text="${c.saleDate}"></td> 
+			 
+			</tr> 
+			
+		
+			  
+		</th:block> 
+	</table>
+	<br>
+	<div style="margin-left:550px;">Total:<input type="text" readonly id="total" style="text-align:center; width:120px;">
+	</div>
+	<br></br>
+	<table style="margin-left:400px;">
+	
+	<tr>
+	<td>Dues Payable</td>
+	<td><input type="number" readonly id="totalDues"  style="font-size:18pt; text-align:center; color:red;"/></td>
+	</tr>
+	<tr>
+	<td>Pay Dues </td>
+	<td><input type="number"  id="duesPayable"  style="font-size:18pt; text-align:center;"/></td>
+	</tr>
+	</table>
+	<br><br>
+	<input type="submit" value="Dues Process" class="btn btn-success" id="duesBtn" style="margin-left:400px; width:400px; height:50px;"/>
+	<br><br>
+	
+	
+	
+            <hr> <hr>
+              <div style="margin-left:60px; font-size:12px; font-weight:bold;">History</div>
+            <table  id="commentData" style="margin-left:20px;  overflow-x:auto;">
+           
+             <thead>
+             </thead>
+             <tbody>
+             
+             
+             </tbody>
+               
+            </table>
+              <hr>
+	<br><br><br><br>
+	<script th:src="@{/lib/jquery/jquery.min.js}"></script>
+	<script>
+	$(document).ready(function(){
+		var backUrl=''
+		var total=0;
+		
+		$("#mytable tr").each(function(i,v){
+			console.log(i);
+			 var price= parseInt($(this).closest('tr').find('td:eq(2)').text());
+			 var qty= parseInt($(this).closest('tr').find('td:eq(3)').text());
+			 subtotal=price*qty;
+			 if(subtotal>0){
+				 total+=subtotal;
+				 
+			 }
+			 
+			 $(this).find(".subtotal").text(subtotal);
+			
+			
+			 
+		});
+		
+		$("#total").val(total);
+		invoiceCustomerNameAndCustomerMobileShow();//
+		transactionHistory();
+		gobackPreviousPage();
+		
+		$("#duesBtn").click(function(){
+			duesUpdate();
+			
+			     window.setTimeout( function() {  //this method work auto refresh after purchase save.
+				  window.location.reload();
+				},1000);
+		});
+		
+	});
+	
+	function duesUpdate(){
+		var invoiceNo=$("#invoice").val();
+		var totalSale=parseInt($("#total").val());
+		var dues=parseInt($("#totalDues").val());
+		var duesPayable=parseInt($("#duesPayable").val());
+		var totalPaid=parseInt(totalSale)-parseInt(dues);
+		var actualTotalPaid=totalPaid+duesPayable;
+		if(duesPayable>0 && duesPayable<=dues){
+			var remainingDue=dues-duesPayable;
+		}else if(duesPayable>dues){
+			
+			alert("Pay Dues value too large !! ");
+			return false;
+		}else{
+			alert("Please Enter value 'Pay Dues Field' !! ");
+			return false;
+		}
+		
+		
+		
+		$.ajax({
+			url:`/dues/dues_update/${remainingDue}/${invoiceNo}/${totalSale}/${duesPayable}/${actualTotalPaid}`,
+			type:'put',
+			contentType: "application/json; charset=utf-8",
+			success : function(response) {
+					alert("Dues Successfully Paid");
+					
+					
+				},
+				error : function() {
+					alert("an Error Occured");
+				}
+		});
+		
+	}
+	
+	function invoiceCustomerNameAndCustomerMobileShow(){
+
+		  var invoiceNo=$("#invoice").val();
+		  console.log(invoiceNo);
+		$.ajax({
+			url:`/dues/get_dues_invoice_wise/${invoiceNo}`,
+			type:'get',
+			success :function(response){
+				console.log(JSON.stringify(response));
+				$.each(response,function(i,v){
+					var valueConvert=
+					document.getElementById("totalDues").defaultValue=v.dues;
+					document.getElementById("customerName").defaultValue=v.customerName;
+					document.getElementById("customerMobile").defaultValue=v.customerMobile;
+					
+				
+					
+					
+				});
+				
+			},
+			error :function(){
+				alert("error");
+			}
+		});
+	}
+	
+	function transactionHistory(){
+		var invoiceNo=$("#invoice").val();
+		$.ajax({
+			url:`/transaction/getAll_transaction_by_invoice/${invoiceNo}`,
+			type:'GET',
+			success :function(response){
+				var tableThead=$('#commentData thead');
+				      tableThead.empty();
+					  const th="<tr  style='background:#98FB98; border:none;'>"+"<th>"+"#"+"</th>"+"<th>"+"Status"+"</th>"+"<th>"+"Total-Sale"+"</th>"+"<th>"+"Paid-Bill"+"</th>"+"<th>"+"Total-Paid-Bill"+"</th>"+"<th>"+"Dues"+"</th>"+"<th>"+"Issue"+"</th>"+"</tr>";
+					  tableThead.append(th);
+					 $.each(response,function(key, value){
+						  var tableBody=$('#commentData tbody');
+					      tableBody.append('<tr style="border:none;"><td style="width:10px;">'+"."+'</td> <td>' +value.status + '</td> <td>' + value.totalBill + '</td><td>' + value.paidBill + '</td><td>' + value.totalPaidBill + '</td><td>' + value.dues + '</td><td>' + value.issueDate + '</td> </tr>');
+					    
+					}); 
+				//alert(JSON.stringify(response));
+			}
+			
+		});
+	}
+	
+	function gobackPreviousPage(){
+		
+		$("#back").click(function() {
+				var mob = $("#customerMobile").val();
+				var url = "/dues/get_dues_customer_mobile/" + mob;
+				$("#back").attr("href", url);
+			});
+		}
+	</script>
+</body>
+</html>

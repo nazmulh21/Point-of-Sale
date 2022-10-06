@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
+<head>
+<meta charset="ISO-8859-1">
+<title>Insert title here</title>
+<style>
+#mytable tr:nth-child(2){      /* this style used for auto increment Serial No in Data Table*/
+ counter-reset: rowNumber;
+					}
+#mytable tr {
+ counter-increment: rowNumber;
+		}
+#mytable tr td:first-child::before {
+ content: counter(rowNumber);
+min-width: 1em;
+margin-right: 0.5em;
+		}
+
+</style>
+</head>
+<body>
+<h2 style="text-align:center;">Dues List</h2>
+<hr>
+<table border="1" style="margin-left:200px; margin-top:50px; overflow-x:auto; width:800px; text-align:center;  border-collapse: collapse;" id="mytable">
+<tr>
+<th>SL</th>
+<th>Invoice No</th>
+<th>Dues</th>
+<th>Customer Name</th>
+<th>Customer Mobile</th>
+<th>Action</th>
+</tr>
+
+<th:block th:each="c: ${duesList}">
+
+           <tr style="text-align:centere;" id="trr" >
+           
+             <td id="sl"></td>
+			 <td class="invoice" th:text="${c.invoiceNo}"></td> 
+			 <td class="dues" th:text="${c.dues}"></td> 
+			  <td class="customerName" th:text="${c.customerName}"></td> 
+			 <td class="customerMobile" th:text="${c.customerMobile}"></td> 
+			 
+			  <td>
+			  
+			      <a th:href="@{/dues/get_dues/{invoiceNo}(invoiceNo=${c.invoiceNo})}" class="btn btn-primary process">Dues Process</a>
+			    
+                </td>
+			  
+			  
+			</tr> 
+		
+			  
+		</th:block> 
+		
+			 
+	</table>
+	<br></br>
+	<div style="margin-left:200px; ">	
+	Total Dues<input type="text" id="totalDues" readonly style="font-size:25pt; text-align:center; color:red;"/>	
+	</div>
+	<hr>
+	<br></br>
+	<script th:src="@{/lib/jquery/jquery.min.js}"></script>
+	<script>
+	  $(document).ready(function(){
+		  var totalDues=0;
+		  $('#mytable tr').each(function(){
+			  var dues=parseInt($(this).find(".dues").text());
+			  if(dues>0){
+				  totalDues+=dues;
+			  }
+		  });
+		  console.log("totalDues",totalDues);
+		  $("#totalDues").val(totalDues);
+		  
+		  
+	  });
+	
+	</script>
+</body>
+</html>

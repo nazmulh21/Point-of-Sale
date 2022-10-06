@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="ISO-8859-1">
+<title>Insert title here</title>
+
+<script src="/lib/jquery/jquery.min.js"></script>
+<link rel="stylesheet" href="/lib/bootstrap/css/bootstrap.min.css" />
+<script src="/lib/bootstrap/js/bootstrap.min.js"></script>
+</head>
+<body>
+	<form th:action="@{/category/brand_Product_Catagory_Save}" th:object="${brandProductCatagory}"
+		method="POST">
+
+		<div class="alert alert-primary" role="alert" style="color: red;"
+			th:text="${msg}"></div>
+		<h1 style="text-align: center;">Brand Product Category Form</h1>
+
+		<a href="/b/brand">Back</a>
+		
+		<div class="container">
+			<div class="row">
+				<div class="form-group">
+					<select name="brandCode" id="brand" style="height: 50px;"></select>
+				</div>
+				<div class="form-group">
+					<select name="productId" id="productId" style="height: 50px; width:110px"></select>
+				</div>
+				<p></p>
+				<div class="form-group">
+
+					<input type="text" th:field="*{catagoryName}"
+						class="form-control form-control-lg " id="productName"
+						required="required" placeholder="Enter Product Name">
+
+				</div>
+
+
+
+
+			</div>
+		</div>
+		<input type="submit" value="Save"/>
+	</form>
+	
+	<script type="text/javascript">
+    $(document).ready(function(){
+    	
+    	 getAllBrand();
+    	 $('#brand').change(function() {
+				$('#productId option').remove();
+				getAllProduct($(this).val()); 
+			});
+    });
+    
+    function getAllBrand() {
+		  // const contextpath = /*[[@{/product/product_list}]]*/ '';
+		   
+			 $.ajax({
+				url :'/b/brand_list_show_product_table',
+				type : 'get',
+				success : function(response) {
+					console.log(response);
+					$('#brand').append($('<option>', {
+						value : '',
+						text : 'Select Brand'
+					}));
+					$.each(response, function(i) {
+						$('#brand').append($('<option>', {
+							value : response[i].brandCode,
+							text : response[i].brandName
+						}));
+					}); 
+				},
+				error : function() {
+					alert("No data found!");
+				}
+			});
+    }
+			 
+			 function getAllProduct(BRAND_CODE) {
+					$.ajax({
+						url : '/product/product_list',
+						type : 'get',
+						data : {
+							"BRAND_CODE" : BRAND_CODE
+						},
+						success : function(response) {
+							//console.log(response);
+							$('#productId').append($('<option>', {
+								value : '',
+								text : 'Select Product'
+							}));
+							$.each(response, function(i) {
+								$('#productId').append($('<option>', {
+									value : response[i].pId.productId,
+									text : response[i].productName
+								}));
+							});
+						},
+						error : function() {
+							alert("No data found!");
+						}
+					});
+				}
+    
+  
+  </script>
+</body>
+</html>

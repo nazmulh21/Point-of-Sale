@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="ISO-8859-1">
+<title>Insert title here</title>
+
+<script src="/lib/jquery/jquery.min.js"></script>
+ <link rel="stylesheet" href="/lib/bootstrap/css/bootstrap.min.css"/>
+ <script src="/lib/bootstrap/js/bootstrap.min.js"></script>
+</head>
+<body>
+
+<div class="alert alert-primary" role="alert" style="color:red;" th:text="${msg}"></div>
+   <h1 style="text-align:center;">Brand Form</h1>
+   <a href="/brandProduct/">Next</a>
+  <form id="myform">
+  <div class="container">
+  <div class="row">
+  <div class="form-group">
+    
+    <input type="text" name="brandName" class="form-control form-control-lg " id="brandName" required="required" placeholder="Enter Brand Name"/>
+  </div>
+  
+  </div>
+  </div>
+  
+  
+  <button style="margin-left:110px; "type="submit" class="btn btn-primary btn-lg" id="btn">Submit</button>
+  
+   
+  </form>
+  <script>
+     $(document).ready(function(){
+    	$("#btn").on("click",function(event){
+    		
+    		event.preventDefault();
+    		
+    		saveAllBrand();
+    	}); 
+    	 
+    });
+     
+     function saveAllBrand() {
+    	 
+    	       var brandName=$("#brandName").val();
+    	       // alert(JSON.stringify(obj));
+    	       
+
+		$.ajax({
+			type : 'POST',
+			contentType: "application/json; charset=utf-8",
+			url : '/b/brand_save',
+			data: JSON.stringify({'brandName': brandName}),
+			cache: false,
+			success : function(response) {
+				alert("Okk");
+				//alert( "Return Values: " + response['brandName']);
+				
+				
+			},
+			error : function() {
+				alert("an Error Occured");
+			}
+		});
+	} 
+  </script>
+
+</body>
+</html>
